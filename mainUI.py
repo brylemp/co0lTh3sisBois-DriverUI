@@ -2,34 +2,44 @@ from tkinter import *
 from historyUI import *
 from PIL import ImageTk, Image
 
+def GoBackHome(window, hist_frame):
+    hist_frame.destroy()
+    mainUI(window)
+
 def sync():
     print("Sync!")
 
 def showhide():
     print("Hidden")
 
-def historyUI(window):
+def historyUI(window,main_frame):
     print("History!")
-    ##### FRAME ######
-    history_frame = Frame(window)
-    history_frame.pack(expand=1, fill=BOTH)
-    history_frame.lift()
-
+    main_frame.destroy()
+    hist_frame = Frame(window)
+    hist_frame.pack(expand=1,fill=BOTH)
+    
     ####### BG through Pillow PIL ########
-    BackGround = Canvas(history_frame, bg="black", height=1000, width=600) 
-    bg_image = ImageTk.PhotoImage(Image.open("db.png")) # BG through Pillow PIL
-    background_label = Label(history_frame, image=bg_image) 
-    background_label.place(x=0, y=0, relwidth=1, relheight=1) 
-    BackGround.pack()
+    hist_bg = Canvas(hist_frame, bg="black", height=1000, width=600) 
+    hist_bg_image = ImageTk.PhotoImage(Image.open("qw.png")) # BG through Pillow PIL
+    hist_label = Label(hist_frame, image=hist_bg_image) 
+    hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
+    hist_bg.pack()
 
-def mainUI():
+    ###### BUTTON IMAGES LOAD #######
+    sd_image = ImageTk.PhotoImage(Image.open("sd.png"))
+
+    #### SYNC ####
+    syB = Button (hist_frame, image=sd_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [hist_frame.destroy(),mainUI(window)])
+    syB.place(x=550,y=349)
+
+def mainUI(window):
     ##### FRAME ######
     main_frame = Frame(window)
-    main_frame.pack(expand=1, fill=BOTH, side="top")
-
+    main_frame.pack(expand=1,fill=BOTH)
+    
     ####### BG through Pillow PIL ########
     BackGround = Canvas(main_frame, bg="black", height=1000, width=600) 
-    bg_image = ImageTk.PhotoImage(Image.open("qw.png")) # BG through Pillow PIL
+    bg_image = ImageTk.PhotoImage(Image.open("db.png")) # BG through Pillow PIL
     background_label = Label(main_frame, image=bg_image) 
     background_label.place(x=0, y=0, relwidth=1, relheight=1) 
     BackGround.pack()
@@ -49,7 +59,7 @@ def mainUI():
     showhideB.place(bordermode=OUTSIDE,x=762,y=349)
 
     #### HISTORY ####
-    histB = Button (main_frame, image=hist_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: historyUI(window))
+    histB = Button (main_frame, image=hist_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: historyUI(window,main_frame))
     histB.place(bordermode=OUTSIDE,x=550,y=460)
 
     #### SHUTDOWN ####
@@ -65,4 +75,4 @@ if __name__ == "__main__":
     window.geometry("1000x600") #Size for Window
     # window.overrideredirect(1) #Remove window border
     window.resizable(False,False) #Prevent resize windows
-    mainUI()
+    mainUI(window)
