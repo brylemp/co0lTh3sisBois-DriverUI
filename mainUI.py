@@ -25,7 +25,7 @@ def mainUI(window):
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="black", height=1000, width=600) 
-    hist_bg_image = ImageTk.PhotoImage(Image.open("qw.png")) # BG through Pillow PIL
+    hist_bg_image = ImageTk.PhotoImage(Image.open("hist_screen.png")) # BG through Pillow PIL
     hist_label = Label(hist_frame, image=hist_bg_image) 
     hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
     hist_bg.pack()
@@ -55,11 +55,21 @@ def mainUI(window):
 
     ###### BUTTONS FOR MAIN UI #######
     ###### BUTTON IMAGES LOAD #######
-    wew = ImageTk.PhotoImage(Image.open("sd.png"))
+    bk = ImageTk.PhotoImage(Image.open("back.png"))
+    nx = ImageTk.PhotoImage(Image.open("next.png"))
+    pv = ImageTk.PhotoImage(Image.open("prev.png"))
 
-    #### SYNC ####
-    wewe = Button (hist_frame, image=wew, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    wewe.place(bordermode=OUTSIDE,x=550,y=349)
+    #### BACK ####
+    backB = Button (hist_frame, image=bk, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    backB.place(bordermode=OUTSIDE,x=550,y=349)
+
+    #### NEXT ####
+    nextB = Button (hist_frame, image=nx, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    nextB.place(bordermode=OUTSIDE,x=550,y=349)
+
+    #### PREVIOUS ####
+    prevB = Button (hist_frame, image=pv, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    prevB.place(bordermode=OUTSIDE,x=550,y=349)
 
     window.mainloop() #Start
 
