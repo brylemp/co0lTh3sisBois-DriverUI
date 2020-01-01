@@ -61,15 +61,15 @@ def mainUI(window):
 
     #### BACK ####
     backB = Button (hist_frame, image=bk, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    backB.place(bordermode=OUTSIDE,x=550,y=349)
+    backB.place(bordermode=OUTSIDE,x=25,y=20)
 
     #### NEXT ####
     nextB = Button (hist_frame, image=nx, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    nextB.place(bordermode=OUTSIDE,x=550,y=349)
+    nextB.place(bordermode=OUTSIDE,x=540,y=510)
 
     #### PREVIOUS ####
     prevB = Button (hist_frame, image=pv, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    prevB.place(bordermode=OUTSIDE,x=550,y=349)
+    prevB.place(bordermode=OUTSIDE,x=275,y=510)
 
     window.mainloop() #Start
 
