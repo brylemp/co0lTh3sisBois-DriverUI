@@ -2,48 +2,35 @@ from tkinter import *
 from historyUI import *
 from PIL import ImageTk, Image
 
-def GoBackHome(window, hist_frame):
-    hist_frame.destroy()
-    mainUI(window)
-
 def sync():
     print("Sync!")
 
 def showhide():
     print("Hidden")
 
-def historyUI(window,main_frame):
-    print("History!")
-    main_frame.destroy()
-    hist_frame = Frame(window)
-    hist_frame.pack(expand=1,fill=BOTH)
-    
-    ####### BG through Pillow PIL ########
-    hist_bg = Canvas(hist_frame, bg="black", height=1000, width=600) 
-    hist_bg_image = ImageTk.PhotoImage(Image.open("qw.png")) # BG through Pillow PIL
-    hist_label = Label(hist_frame, image=hist_bg_image) 
-    hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
-    hist_bg.pack()
-
-    ###### BUTTON IMAGES LOAD #######
-    sd_image = ImageTk.PhotoImage(Image.open("sd.png"))
-
-    #### SYNC ####
-    syB = Button (hist_frame, image=sd_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [hist_frame.destroy(),mainUI(window)])
-    syB.place(x=550,y=349)
-
 def mainUI(window):
     ##### FRAME ######
     main_frame = Frame(window)
     main_frame.pack(expand=1,fill=BOTH)
+
+    hist_frame = Frame(window)
+    hist_frame.pack_forget()
     
-    ####### BG through Pillow PIL ########
+    ####### MAIN UI BG through Pillow PIL ########
     BackGround = Canvas(main_frame, bg="black", height=1000, width=600) 
     bg_image = ImageTk.PhotoImage(Image.open("db.png")) # BG through Pillow PIL
     background_label = Label(main_frame, image=bg_image) 
     background_label.place(x=0, y=0, relwidth=1, relheight=1) 
     BackGround.pack()
 
+    ####### HISTORY UI BG through Pillow PIL ########
+    hist_bg = Canvas(hist_frame, bg="black", height=1000, width=600) 
+    hist_bg_image = ImageTk.PhotoImage(Image.open("qw.png")) # BG through Pillow PIL
+    hist_label = Label(hist_frame, image=hist_bg_image) 
+    hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
+    hist_bg.pack()
+
+    ###### BUTTONS FOR MAIN UI #######
     ###### BUTTON IMAGES LOAD #######
     sd_image = ImageTk.PhotoImage(Image.open("sd.png"))
     sy_image = ImageTk.PhotoImage(Image.open("sync.png"))
@@ -59,12 +46,20 @@ def mainUI(window):
     showhideB.place(bordermode=OUTSIDE,x=762,y=349)
 
     #### HISTORY ####
-    histB = Button (main_frame, image=hist_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: historyUI(window,main_frame))
+    histB = Button (main_frame, image=hist_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
     histB.place(bordermode=OUTSIDE,x=550,y=460)
 
     #### SHUTDOWN ####
     shutdownB = Button (main_frame, image=sd_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=window.destroy) 
     shutdownB.place(bordermode=OUTSIDE,x=760,y=459)
+
+    ###### BUTTONS FOR MAIN UI #######
+    ###### BUTTON IMAGES LOAD #######
+    wew = ImageTk.PhotoImage(Image.open("sd.png"))
+
+    #### SYNC ####
+    wewe = Button (hist_frame, image=wew, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    wewe.place(bordermode=OUTSIDE,x=550,y=349)
 
     window.mainloop() #Start
 
