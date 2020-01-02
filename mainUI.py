@@ -36,11 +36,11 @@ def mainUI(window):
     main_bg.pack()
 
     ###### MAIN UI LABELS ###########
-    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("Arial",75), text="₱500")
-    main_totalfare.place(x=105,y=72)
+    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",50), text="₱500")
+    main_totalfare.place(x=125,y=72)
 
-    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("Arial",75), text=shflag)
-    main_totalpass.place(x=105,y=372)
+    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",50), text=shflag)
+    main_totalpass.place(x=125,y=372)
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=1000, width=600) 
