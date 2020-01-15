@@ -84,11 +84,11 @@ def mainUI(window):
 
     #### NEXT ####
     nextB = Button (hist_frame, image=nx, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    nextB.place(bordermode=OUTSIDE,x=540,y=510)
+    nextB.place(bordermode=OUTSIDE,x=465,y=380)
 
     #### PREVIOUS ####
     prevB = Button (hist_frame, image=pv, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
-    prevB.place(bordermode=OUTSIDE,x=275,y=510)
+    prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
     window.mainloop() #Start
 
