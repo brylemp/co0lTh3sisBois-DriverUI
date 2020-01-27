@@ -3,6 +3,10 @@ from historyUI import *
 from PIL import ImageTk, Image
 
 shflag=0
+Total_Fare = 1500
+Total_Passenger = 300
+Driver_Name = "Dela Cruz, Juan Paolo"
+Wifi_Status = 0
 
 def sync():
     print("Sync!")
@@ -16,8 +20,9 @@ def showhide(main_totalfare,main_totalpass):
         shflag = 1
     elif shflag == 1:
         print("Shown!")
-        main_totalfare.config(text="₱1500")
-        main_totalpass.config(text="300")
+        TTF = "₱"+str(Total_Fare)
+        main_totalfare.config(text=TTF)
+        main_totalpass.config(text=Total_Passenger)
         shflag = 0
         
 def mainUI(window):
@@ -36,11 +41,20 @@ def mainUI(window):
     main_bg.pack()
 
     ###### MAIN UI LABELS ###########
-    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text="₱1500")
+    TTF = "₱"+str(Total_Fare)
+    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=TTF)
     main_totalfare.place(x=70,y=32)
 
-    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text="300")
+    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=Total_Passenger)
     main_totalpass.place(x=70,y=282)
+    
+    main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
+    main_drivername.place(x=10,y=445)
+    
+    if(Wifi_Status==0):
+        main_wifi = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
+        main_wifi.place(x=10,y=10)
+        
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
