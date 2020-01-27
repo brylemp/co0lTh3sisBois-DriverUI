@@ -2,14 +2,30 @@ from tkinter import *
 from historyUI import *
 from PIL import ImageTk, Image
 
+# wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
+# wifi_label = Label(main_frame, image=wifi_image, bd=0) 
+# wifi_label.place(x=10,y=10)
+
 shflag=0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 Wifi_Status = 0
 
-def sync():
-    print("Sync!")
+def sync(wifi_label,nowifi_label):
+    # print("Sync!")
+    global Wifi_Status
+    
+    if Wifi_Status == 0:
+        wifi_label.place_forget()
+        nowifi_label.place(x=10,y=10)
+        Wifi_Status = not Wifi_Status
+        print(Wifi_Status)
+    elif Wifi_Status == 1:
+        nowifi_label.place_forget()
+        wifi_label.place(x=10,y=10)
+        Wifi_Status = not Wifi_Status
+        print(Wifi_Status)
 
 def showhide(main_totalfare,main_totalpass):
     global shflag
@@ -35,7 +51,7 @@ def mainUI(window):
     
     ####### MAIN UI BG through Pillow PIL ########
     main_bg = Canvas(main_frame, bg="#e3e3e3", height=480, width=848) 
-    main_bg_image = ImageTk.PhotoImage(Image.open("db.png")) # BG through Pillow PIL
+    main_bg_image = ImageTk.PhotoImage(Image.open("emptybg.png")) # BG through Pillow PIL
     main_label = Label(main_frame, image=main_bg_image) 
     main_label.place(x=0, y=0, relwidth=1, relheight=1) 
     main_bg.pack()
@@ -49,12 +65,15 @@ def mainUI(window):
     main_totalpass.place(x=70,y=282)
     
     main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
-    main_drivername.place(x=10,y=445)
-    
-    if(Wifi_Status==0):
-        main_wifi = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
-        main_wifi.place(x=10,y=10)
-        
+    main_drivername.place(x=10,y=445) 
+
+    nowifi_image = ImageTk.PhotoImage(Image.open("nowifi.png"))
+    nowifi_label = Label(main_frame, image=nowifi_image, bd=0, bg="#e3e3e3") 
+    nowifi_label.place(x=10,y=10)
+
+    wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
+    wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
+    wifi_label.place(x=10,y=10)
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
@@ -71,7 +90,7 @@ def mainUI(window):
     hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
 
     #### SYNC ####
-    syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=sync)
+    syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync(wifi_label,nowifi_label))
     syB.place(bordermode=OUTSIDE,x=438,y=258)
 
     #### SHOW/HIDE ####
