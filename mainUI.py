@@ -24,7 +24,8 @@ def is_wifi(window,wifi_label,nowifi_label):
         Driver_Name = "Pat1"
         wifi_label.place(x=10,y=10)
         nowifi_label.place_forget
-    window.after(5000, is_wifi(window, wifi_label, nowifi_label))
+        
+    window.after(5000, is_wifi)
 
 def sync(wifi_label,nowifi_label):
     # print("Sync!")
@@ -139,7 +140,7 @@ def mainUI(window):
     prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
     prevB.place(bordermode=OUTSIDE,x=200,y=380)
     
-    is_wifi(window,wifi_label,nowifi_label)
+    is_wifi()
     window.mainloop() #Start
     
 
