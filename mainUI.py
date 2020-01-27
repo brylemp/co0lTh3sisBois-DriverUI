@@ -1,16 +1,30 @@
 from tkinter import *
 from historyUI import *
 from PIL import ImageTk, Image
-
-# wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
-# wifi_label = Label(main_frame, image=wifi_image, bd=0) 
-# wifi_label.place(x=10,y=10)
+import os,re
 
 shflag=0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 Wifi_Status = 0
+
+def is_wifi(window,wifi_label,nowifi_label):
+    global Driver_Name
+    wat = os.popen('iwgetid').read()
+    watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
+    watt = ''.join(watt) ##CONVERT LIST TO STRING##
+    if watt == "Patalinghug2":
+        print(watt)
+        Driver_Name = "Pat2"
+        nowifi_label.place(x=10,y=10)
+        wifi_label.place_forget
+    else:
+        print(watt)
+        Driver_Name = "Pat1"
+        wifi_label.place(x=10,y=10)
+        nowifi_label.place_forget
+    window.after(5000, is_wifi(window, wifi_label, nowifi_label))
 
 def sync(wifi_label,nowifi_label):
     # print("Sync!")
@@ -66,14 +80,16 @@ def mainUI(window):
     
     main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
     main_drivername.place(x=10,y=445) 
-
+    
     nowifi_image = ImageTk.PhotoImage(Image.open("nowifi.png"))
     nowifi_label = Label(main_frame, image=nowifi_image, bd=0, bg="#e3e3e3") 
-    nowifi_label.place(x=10,y=10)
+    #nowifi_label.place(x=10,y=10)
 
     wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
     wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
-    wifi_label.place(x=10,y=10)
+    #wifi_label.place(x=10,y=10)
+
+    
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
@@ -122,8 +138,10 @@ def mainUI(window):
     #### PREVIOUS ####
     prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
     prevB.place(bordermode=OUTSIDE,x=200,y=380)
-
+    
+    is_wifi(window,wifi_label,nowifi_label)
     window.mainloop() #Start
+    
 
 if __name__ == "__main__":
     ##### WINDOW #####
