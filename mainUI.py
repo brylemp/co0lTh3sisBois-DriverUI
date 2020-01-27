@@ -16,8 +16,8 @@ def showhide(main_totalfare,main_totalpass):
         shflag = 1
     elif shflag == 1:
         print("Shown!")
-        main_totalfare.config(text="₱500")
-        main_totalpass.config(text="100")
+        main_totalfare.config(text="₱1500")
+        main_totalpass.config(text="300")
         shflag = 0
         
 def mainUI(window):
@@ -36,11 +36,11 @@ def mainUI(window):
     main_bg.pack()
 
     ###### MAIN UI LABELS ###########
-    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",70), text="₱500")
-    main_totalfare.place(x=80,y=42)
+    main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text="₱1500")
+    main_totalfare.place(x=70,y=32)
 
-    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",70), text="100")
-    main_totalpass.place(x=80,y=262)
+    main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text="300")
+    main_totalpass.place(x=70,y=282)
 
     ####### HISTORY UI BG through Pillow PIL ########
     hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
@@ -57,19 +57,19 @@ def mainUI(window):
     hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
 
     #### SYNC ####
-    syB = Button (main_frame, image=sy_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=sync)
+    syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=sync)
     syB.place(bordermode=OUTSIDE,x=438,y=258)
 
     #### SHOW/HIDE ####
-    showhideB = Button (main_frame, image=showhide_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: showhide(main_totalfare,main_totalpass))
+    showhideB = Button (main_frame, image=showhide_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: showhide(main_totalfare,main_totalpass))
     showhideB.place(bordermode=OUTSIDE,x=650,y=258)
 
     #### HISTORY ####
-    histB = Button (main_frame, image=hist_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
+    histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
     histB.place(bordermode=OUTSIDE,x=438,y=370)
 
     #### SHUTDOWN ####
-    shutdownB = Button (main_frame, image=sd_image, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=window.destroy) 
+    shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=window.destroy) 
     shutdownB.place(bordermode=OUTSIDE,x=650,y=370)
 
     ###### BUTTONS FOR HISTORY UI #######
@@ -79,15 +79,15 @@ def mainUI(window):
     pv = ImageTk.PhotoImage(Image.open("prev.png"))
 
     #### BACK ####
-    backB = Button (hist_frame, image=bk, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    backB = Button (hist_frame, image=bk, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
     backB.place(bordermode=OUTSIDE,x=25,y=20)
 
     #### NEXT ####
-    nextB = Button (hist_frame, image=nx, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    nextB = Button (hist_frame, image=nx, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
     nextB.place(bordermode=OUTSIDE,x=465,y=380)
 
     #### PREVIOUS ####
-    prevB = Button (hist_frame, image=pv, width=182, height=74, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+    prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
     prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
     window.mainloop() #Start
