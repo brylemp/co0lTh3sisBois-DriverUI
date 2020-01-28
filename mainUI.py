@@ -45,13 +45,9 @@ def is_wifi():
     wifi_label.image=replace
     window.after(5000, is_wifi)
 
-def recent_student():
-    #main_recent.config(text=Recent_Student)
-    window.after(500, recent_student)
-
-def grey_out():
-    print("REFRESH!")
-    window.after(500, grey_out)
+# def recent_student():
+#     main_recent.config(text=Recent_Student)
+#     window.after(500, recent_student)
 
 def sync():
     print("Sync!")
@@ -164,10 +160,4 @@ prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
-recent_student()
-#grey_screen()
 window.mainloop() #Start
-
-
-
-    
