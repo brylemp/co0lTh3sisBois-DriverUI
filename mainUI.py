@@ -3,25 +3,26 @@ from historyUI import *
 from PIL import ImageTk, Image
 import os,re
 
-import RPi.GPIO as GPIO
-import time
+# import RPi.GPIO as GPIO
+# import time
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setwarnings(False)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# GPIO.setwarnings(False)
 
-shflag=0
+shflag = 0
+grey = 0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 Recent_Student = 0
 
-def button_callback(channel):
-	global Recent_Student
-	Recent_Student = not Recent_Student
-	print(Recent_Student)
+# def button_callback(channel):
+# 	global Recent_Student
+# 	Recent_Student = not Recent_Student
+# 	print(Recent_Student)
 
-GPIO.add_event_detect(16,GPIO.RISING,callback=button_callback)
+# GPIO.add_event_detect(16,GPIO.RISING,callback=button_callback)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -52,6 +53,19 @@ def grey_out():
 def sync():
     print("Sync!")
 
+def grey_screen():
+    global grey
+    if grey == 0:
+        main_frame.pack_forget()
+        grey_frame.pack(expand=1,fill=BOTH)
+        grey = not grey
+    elif grey == 1:
+        grey_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        grey = not grey
+
+    window.after(1000, grey_screen)
+
 def showhide(main_totalfare,main_totalpass):
     global shflag
     if shflag == 0:
@@ -66,7 +80,6 @@ def showhide(main_totalfare,main_totalpass):
         main_totalpass.config(text=Total_Passenger)
         shflag = 0
         
-
 ##### WINDOW #####
 window = Tk()
 window.geometry("848x480") #Size for Window
@@ -79,6 +92,9 @@ main_frame.pack(expand=1,fill=BOTH)
 
 hist_frame = Frame(window)
 hist_frame.pack_forget()
+
+grey_frame = Frame(window)
+grey_frame.pack_forget()
 
 ####### MAIN UI BG through Pillow PIL ########
 main_bg = Canvas(main_frame, bg="#e3e3e3", height=480, width=848) 
@@ -112,6 +128,10 @@ hist_label = Label(hist_frame, image=hist_bg_image)
 hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
 hist_bg.pack()
 
+####### GREYED OUT UI BG through Pillow PIL ########
+grey_bg = Canvas(grey_frame, bg="#e3e3e3", height=480, width=848) 
+grey_bg.pack()
+
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
 sd_image = ImageTk.PhotoImage(Image.open("sd.png"))
@@ -120,7 +140,7 @@ showhide_image = ImageTk.PhotoImage(Image.open("showhide.png"))
 hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
 
 #### SYNC ####
-syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync())
+syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: grey_screen())
 syB.place(bordermode=OUTSIDE,x=438,y=258)
 
 #### SHOW/HIDE ####
