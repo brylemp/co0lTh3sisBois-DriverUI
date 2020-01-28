@@ -3,26 +3,29 @@ from historyUI import *
 from PIL import ImageTk, Image
 import os,re
 
-# import RPi.GPIO as GPIO
-# import time
+import RPi.GPIO as GPIO
+import time
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-# GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setwarnings(False)
 
 shflag = 0
-grey = 0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 Recent_Student = 0
 
-# def button_callback(channel):
-# 	global Recent_Student
-# 	Recent_Student = not Recent_Student
-# 	print(Recent_Student)
-
-# GPIO.add_event_detect(16,GPIO.RISING,callback=button_callback)
+def grey_toggle(channel):
+    if(GPIO.input(16)==GPIO.HIGH):
+        main_frame.pack_forget()
+        hist_frame.pack_forget()
+        grey_frame.pack(expand=1,fill=BOTH)
+    else:   
+        grey_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+    
+GPIO.add_event_detect(16,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -43,7 +46,7 @@ def is_wifi():
     window.after(5000, is_wifi)
 
 def recent_student():
-    main_recent.config(text=Recent_Student)
+    #main_recent.config(text=Recent_Student)
     window.after(500, recent_student)
 
 def grey_out():
@@ -52,19 +55,6 @@ def grey_out():
 
 def sync():
     print("Sync!")
-
-def grey_screen():
-    global grey
-    if grey == 0:
-        main_frame.pack_forget()
-        grey_frame.pack(expand=1,fill=BOTH)
-        grey = not grey
-    elif grey == 1:
-        grey_frame.pack_forget()
-        main_frame.pack(expand=1,fill=BOTH)
-        grey = not grey
-
-    window.after(1000, grey_screen)
 
 def showhide(main_totalfare,main_totalpass):
     global shflag
@@ -114,8 +104,8 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
 
-main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Recent_Student)
-main_recent.place(x=100,y=100) 
+#main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Recent_Student)
+#main_recent.place(x=100,y=100) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -140,7 +130,7 @@ showhide_image = ImageTk.PhotoImage(Image.open("showhide.png"))
 hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
 
 #### SYNC ####
-syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: grey_screen())
+syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync())
 syB.place(bordermode=OUTSIDE,x=438,y=258)
 
 #### SHOW/HIDE ####
@@ -175,7 +165,7 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
 recent_student()
-grey_out()
+#grey_screen()
 window.mainloop() #Start
 
 
