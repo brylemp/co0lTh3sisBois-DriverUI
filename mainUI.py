@@ -3,20 +3,34 @@ from historyUI import *
 from PIL import ImageTk, Image
 import os,re
 
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setwarnings(False)
+
 shflag=0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
-Wifi_Status = 0
+Recent_Student = 0
+
+def button_callback(channel):
+	global Recent_Student
+	Recent_Student = not Recent_Student
+	print(Recent_Student)
+
+GPIO.add_event_detect(16,GPIO.RISING,callback=button_callback)
 
 def is_wifi():
-    # wat = os.popen('iwgetid').read() ### RASPI ###
-    # watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
-    # watt = ''.join(watt) ##CONVERT LIST TO STRING##
+    wat = os.popen('iwgetid').read() ### RASPI ###
+    watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
+    watt = ''.join(watt) ##CONVERT LIST TO STRING##
 
-    ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
-    x = ipadd.find('Profile                : ') + 25
-    watt = ipadd[x:].split(' ')[0]
+    # ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
+    # x = ipadd.find('Profile                : ') + 25
+    # watt = ipadd[x:].split(' ')[0]
 
     if watt == "Patalinghug1":
         replace = ImageTk.PhotoImage(Image.open("wifistatus.png"))
@@ -28,12 +42,12 @@ def is_wifi():
     window.after(5000, is_wifi)
 
 def recent_student():
-    print("REFRESH!")
+    main_recent.config(text=Recent_Student)
     window.after(500, recent_student)
 
 def grey_out():
     print("REFRESH!")
-    window.after(500, recent_student)
+    window.after(500, grey_out)
 
 def sync():
     print("Sync!")
@@ -83,6 +97,9 @@ main_totalpass.place(x=70,y=282)
 
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
+
+main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Recent_Student)
+main_recent.place(x=100,y=100) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -138,6 +155,7 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
 recent_student()
+grey_out()
 window.mainloop() #Start
 
 
