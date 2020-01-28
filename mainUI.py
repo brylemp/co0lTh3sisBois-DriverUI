@@ -10,9 +10,14 @@ Driver_Name = "Dela Cruz, Juan Paolo"
 Wifi_Status = 0
 
 def is_wifi():
-    wat = os.popen('iwgetid').read()
-    watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
-    watt = ''.join(watt) ##CONVERT LIST TO STRING##
+    # wat = os.popen('iwgetid').read() ### RASPI ###
+    # watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
+    # watt = ''.join(watt) ##CONVERT LIST TO STRING##
+
+    ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
+    x = ipadd.find('Profile                : ') + 25
+    watt = ipadd[x:].split(' ')[0]
+
     if watt == "Patalinghug1":
         replace = ImageTk.PhotoImage(Image.open("wifistatus.png"))
     else:
@@ -22,20 +27,16 @@ def is_wifi():
     wifi_label.image=replace
     window.after(5000, is_wifi)
 
-def sync(wifi_label,nowifi_label):
-    # print("Sync!")
-    global Wifi_Status
-    
-    if Wifi_Status == 0:
-        wifi_label.place_forget()
-        nowifi_label.place(x=10,y=10)
-        Wifi_Status = not Wifi_Status
-        print(Wifi_Status)
-    elif Wifi_Status == 1:
-        nowifi_label.place_forget()
-        wifi_label.place(x=10,y=10)
-        Wifi_Status = not Wifi_Status
-        print(Wifi_Status)
+def recent_student():
+    print("REFRESH!")
+    window.after(500, recent_student)
+
+def grey_out():
+    print("REFRESH!")
+    window.after(500, recent_student)
+
+def sync():
+    print("Sync!")
 
 def showhide(main_totalfare,main_totalpass):
     global shflag
@@ -87,7 +88,6 @@ wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
 wifi_label.place(x=10,y=10)
 
-
 ####### HISTORY UI BG through Pillow PIL ########
 hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
 hist_bg_image = ImageTk.PhotoImage(Image.open("hist_screen.png")) # BG through Pillow PIL
@@ -103,7 +103,7 @@ showhide_image = ImageTk.PhotoImage(Image.open("showhide.png"))
 hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
 
 #### SYNC ####
-syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync(wifi_label,nowifi_label))
+syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync())
 syB.place(bordermode=OUTSIDE,x=438,y=258)
 
 #### SHOW/HIDE ####
@@ -137,6 +137,7 @@ prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
+recent_student()
 window.mainloop() #Start
 
 

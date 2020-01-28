@@ -1,22 +1,6 @@
-import socket
-import tkinter
+import os,re
 
-top = tkinter.Tk()
-top.title("Network Checker")
-top.configure(background="#006666")
+ipadd = os.popen('Netsh WLAN show interfaces').read()
+x = ipadd.find('Profile                : ') + 25
 
-l=tkinter.Label(top,text='Checking ...')
-l.pack()
-
-def is_connected():
-    try:
-        socket.create_connection(("www.google.com", 80)) # better to set timeout as well
-        state = "Online"
-    except OSError:
-        state = "Offline"
-    l.config(text=state)
-    print(state)
-    top.after(1000, is_connected) # do checking again one second later
-
-is_connected() # start the checking
-top.mainloop()
+watt = ipadd[x:].split(' ')[0]
