@@ -4,6 +4,7 @@ from PIL import ImageTk, Image
 import os,re
 
 import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522
 import time
 
 GPIO.setmode(GPIO.BCM)
@@ -14,6 +15,8 @@ shflag = 0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
+RFID_reader1 = SimpleMFRC522()
+
 Recent_Student = 0
 
 def grey_toggle(channel):
@@ -45,9 +48,15 @@ def is_wifi():
     wifi_label.image=replace
     window.after(5000, is_wifi)
 
-# def recent_student():
-#     main_recent.config(text=Recent_Student)
-#     window.after(500, recent_student)
+def recent_student():
+     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+     GPIO.cleanup()
+     main_recent.config(text=rfid_idnum)
+     window.after(100, recent_student)
+
+def grey_out():
+    print("REFRESH!")
+    window.after(500, grey_out)
 
 def sync():
     print("Sync!")
@@ -100,8 +109,8 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
 
-#main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Recent_Student)
-#main_recent.place(x=100,y=100) 
+main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#000000", fg="#FFFFFF", font=("ArialUnicodeMS",15), text=Recent_Student)
+main_recent.place(x=500,y=100) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -160,4 +169,11 @@ prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
+recent_student()
+#grey_screen()
 window.mainloop() #Start
+
+
+
+    
+
