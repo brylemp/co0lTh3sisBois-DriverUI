@@ -17,7 +17,7 @@ Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 RFID_reader1 = SimpleMFRC522()
 
-Recent_Student = 0
+Recent_Student = "None"
 
 def grey_toggle(channel):
     if(GPIO.input(16)==GPIO.HIGH):
@@ -109,8 +109,8 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
 
-main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#000000", fg="#FFFFFF", font=("ArialUnicodeMS",15), text=Recent_Student)
-main_recent.place(x=500,y=100) 
+main_recent = Label(main_frame, height="1", width="9", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",31), text=Recent_Student)
+main_recent.place(x=533,y=58) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
