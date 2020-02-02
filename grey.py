@@ -1,39 +1,31 @@
 from tkinter import *
+
 from PIL import ImageTk, Image
 import os,re
 
 import RPi.GPIO as GPIO
-from mfrc522 import SimpleMFRC522
 import time
 
-hb_sensor = 21
-
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(hb_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(18,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
 
 shflag = 0
-counter = 0
-grey_flag = 0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
-RFID_reader1 = SimpleMFRC522()
+Recent_Student = 0
 
 def grey_toggle(channel):
-    global grey_flag
-    if(GPIO.input(hb_sensor)==GPIO.HIGH):
-        grey_flag = 1
+    if(GPIO.input(18)==GPIO.HIGH):
         main_frame.pack_forget()
         hist_frame.pack_forget()
         grey_frame.pack(expand=1,fill=BOTH)
-        #grey_recent.config(text="")
-    else:
-        grey_flag = 0   
+    else:   
         grey_frame.pack_forget()
         main_frame.pack(expand=1,fill=BOTH)
     
-GPIO.add_event_detect(hb_sensor,GPIO.RISING,callback=grey_toggle)
+GPIO.add_event_detect(18,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -54,28 +46,12 @@ def is_wifi():
     window.after(5000, is_wifi)
 
 def recent_student():
-     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     print(rfid_idnum)
-     main_recent.config(text=rfid_idnum,anchor="w")
-     window.after(100, recent_student)
+    #main_recent.config(text=Recent_Student)
+    window.after(500, recent_student)
 
-def grey_recent_student():
-     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     global counter
-     print(rfid_idnum)
-     
-     if(rfid_idnum!=None and grey_flag==1):
-         counter = 0
-     
-     if(counter==40 and grey_flag==1):
-         print(counter)
-         counter = 0
-         grey_recent.config(text="",anchor="w")
-     elif(counter<40 and grey_flag==1):
-         counter = counter + 1
-         grey_recent.config(text=rfid_idnum,anchor="w")
-     
-     window.after(100, grey_recent_student)
+def grey_out():
+    print("REFRESH!")
+    window.after(500, grey_out)
 
 def sync():
     print("Sync!")
@@ -128,8 +104,8 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
 
-main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")
-main_recent.place(x=540,y=58) 
+#main_recent = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Recent_Student)
+#main_recent.place(x=100,y=100) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -143,11 +119,8 @@ hist_label.place(x=0, y=0, relwidth=1, relheight=1)
 hist_bg.pack()
 
 ####### GREYED OUT UI BG through Pillow PIL ########
-grey_bg = Canvas(grey_frame, bg="#0e0e0e", height=480, width=848) 
+grey_bg = Canvas(grey_frame, bg="#e3e3e3", height=480, width=848) 
 grey_bg.pack()
-
-grey_recent = Label(grey_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="")
-grey_recent.place(x=540,y=58) 
 
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
@@ -192,5 +165,10 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
 recent_student()
-grey_recent_student()
+#grey_screen()
 window.mainloop() #Start
+
+
+
+    
+
