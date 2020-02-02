@@ -8,7 +8,7 @@ from mfrc522 import SimpleMFRC522
 import time
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(16,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(18,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
 
 shflag = 0
@@ -17,10 +17,9 @@ Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 RFID_reader1 = SimpleMFRC522()
 
-Recent_Student = "None"
-
 def grey_toggle(channel):
-    if(GPIO.input(16)==GPIO.HIGH):
+    print("LOL")
+    if(GPIO.input(18)==GPIO.HIGH):
         main_frame.pack_forget()
         hist_frame.pack_forget()
         grey_frame.pack(expand=1,fill=BOTH)
@@ -28,7 +27,7 @@ def grey_toggle(channel):
         grey_frame.pack_forget()
         main_frame.pack(expand=1,fill=BOTH)
     
-GPIO.add_event_detect(16,GPIO.RISING,callback=grey_toggle)
+GPIO.add_event_detect(18,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -51,7 +50,8 @@ def is_wifi():
 def recent_student():
      rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
      GPIO.cleanup()
-     main_recent.config(text=rfid_idnum)
+     #print(rfid_idnum)
+     main_recent.config(text=rfid_idnum,anchor="w")
      window.after(100, recent_student)
 
 def grey_out():
@@ -109,8 +109,8 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
 main_drivername.place(x=10,y=445) 
 
-main_recent = Label(main_frame, height="1", width="9", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",31), text=Recent_Student)
-main_recent.place(x=533,y=58) 
+main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")
+main_recent.place(x=540,y=58) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -172,8 +172,3 @@ is_wifi()
 recent_student()
 #grey_screen()
 window.mainloop() #Start
-
-
-
-    
-
