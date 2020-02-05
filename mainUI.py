@@ -7,35 +7,21 @@ import time
 import raspiRFID
 import datetime
 
+handbrake_sensor = 21
 
-hb_sensor = 21
-
-# GPIO.setup(hb_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setwarnings(False)
 shuttlePrice='5'
 temp_DRIVERID='13'
-shflag = 0
-counter = 0
+showhide_flag = 0
+grey_counter = 0
 grey_flag = 0
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
-RFID_reader1 = SimpleMFRC522()
 
-# def grey_toggle(channel):
-    # global grey_flag
-    # if(GPIO.input(hb_sensor)==GPIO.HIGH):
-        # grey_flag = 1
-        # main_frame.pack_forget()
-        # hist_frame.pack_forget()
-        # grey_frame.pack(expand=1,fill=BOTH)
-        # #grey_recent.config(text="")
-    # else:
-        # grey_flag = 0   
-        # grey_frame.pack_forget()
-        # main_frame.pack(expand=1,fill=BOTH)
-    
-# GPIO.add_event_detect(hb_sensor,GPIO.RISING,callback=grey_toggle)
+RFID_reader1 = SimpleMFRC522()
+# GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setwarnings(False)
+# GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -46,29 +32,27 @@ def is_wifi():
     # x = ipadd.find('Profile                : ') + 25
     # watt = ipadd[x:].split(' ')[0]
 
-    if watt == "Patalinghug1":
-        replace = ImageTk.PhotoImage(Image.open("wifistatus.png"))
+    if watt == "thesisShuttle":
+        replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
     else:
-        replace = ImageTk.PhotoImage(Image.open("nowifi.png"))
+        replace = ImageTk.PhotoImage(Image.open("Images/nowifi.png"))
         
     wifi_label.config(image=replace)
     wifi_label.image=replace
     window.after(5000, is_wifi)
 
-def recent_student():
-    rfid_uid, text = RFID_reader1.read_no_block()
-    rfid_idNum=raspiRFID.checkUID(rfid_uid)
-    print('IDNUM')
-    print(rfid_idNum)
-    if(rfid_idNum!=None):
-            transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum),int(shuttlePrice),str(temp_DRIVERID))]
-            raspiRFID.inputTransactiontoDB(transactionRecord)
-    else:
-            print('UID not in database')
-    
-    main_recent.config(text=rfid_idNum,anchor="w")
-    window.after(100, recent_student)
-    
+# def grey_toggle(channel):
+    # global grey_flag
+    # if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
+        # grey_flag = 1
+        # main_frame.pack_forget()
+        # hist_frame.pack_forget()
+        # grey_frame.pack(expand=1,fill=BOTH)
+        # #grey_recent.config(text="")
+    # else:
+        # grey_flag = 0   
+        # grey_frame.pack_forget()
+        # main_frame.pack(expand=1,fill=BOTH)
 
 # def grey_recent_student():
      # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
@@ -88,22 +72,36 @@ def recent_student():
      
      # window.after(100, grey_recent_student)
 
+def recent_student():
+    rfid_uid, text = RFID_reader1.read_no_block()
+    rfid_idNum=raspiRFID.checkUID(rfid_uid)
+    print('IDNUM')
+    print(rfid_idNum)
+    if(rfid_idNum!=None):
+            transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum),int(shuttlePrice),str(temp_DRIVERID))]
+            raspiRFID.inputTransactiontoDB(transactionRecord)
+    else:
+            print('UID not in database')
+    
+    main_recent.config(text=rfid_idNum,anchor="w")
+    window.after(100, recent_student)
+
 def sync():
     print("Sync!")
 
 def showhide(main_totalfare,main_totalpass):
-    global shflag
-    if shflag == 0:
+    global showhide_flag
+    if showhide_flag == 0:
         print("Hidden!")
         main_totalfare.config(text="Hidden")
         main_totalpass.config(text="Hidden")
-        shflag = 1
-    elif shflag == 1:
+        showhide_flag = 1
+    elif showhide_flag == 1:
         print("Shown!")
         TTF = "₱"+str(Total_Fare)
         main_totalfare.config(text=TTF)
         main_totalpass.config(text=Total_Passenger)
-        shflag = 0
+        showhide_flag = 0
         
 ##### WINDOW #####
 window = Tk()
@@ -123,7 +121,7 @@ grey_frame.pack_forget()
 
 ####### MAIN UI BG through Pillow PIL ########
 main_bg = Canvas(main_frame, bg="#e3e3e3", height=480, width=848) 
-main_bg_image = ImageTk.PhotoImage(Image.open("emptybg.png")) # BG through Pillow PIL
+main_bg_image = ImageTk.PhotoImage(Image.open("Images/emptybg.png")) # BG through Pillow PIL
 main_label = Label(main_frame, image=main_bg_image) 
 main_label.place(x=0, y=0, relwidth=1, relheight=1) 
 main_bg.pack()
@@ -142,13 +140,13 @@ main_drivername.place(x=10,y=445)
 main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")
 main_recent.place(x=540,y=58) 
 
-wifi_image = ImageTk.PhotoImage(Image.open("wifistatus.png"))
+wifi_image = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
 wifi_label.place(x=10,y=10)
 
 ####### HISTORY UI BG through Pillow PIL ########
 hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
-hist_bg_image = ImageTk.PhotoImage(Image.open("hist_screen.png")) # BG through Pillow PIL
+hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_bg.png")) # BG through Pillow PIL
 hist_label = Label(hist_frame, image=hist_bg_image) 
 hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
 hist_bg.pack()
@@ -162,10 +160,10 @@ grey_recent.place(x=540,y=58)
 
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
-sd_image = ImageTk.PhotoImage(Image.open("sd.png"))
-sy_image = ImageTk.PhotoImage(Image.open("sync.png"))
-showhide_image = ImageTk.PhotoImage(Image.open("showhide.png"))
-hist_image = ImageTk.PhotoImage(Image.open("hist.png"))
+sd_image = ImageTk.PhotoImage(Image.open("Images/sd_button.png"))
+sy_image = ImageTk.PhotoImage(Image.open("Images/sync_button.png"))
+showhide_image = ImageTk.PhotoImage(Image.open("Images/showhide_button.png"))
+hist_image = ImageTk.PhotoImage(Image.open("Images/hist_button.png"))
 
 #### SYNC ####
 syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync())
@@ -185,9 +183,9 @@ shutdownB.place(bordermode=OUTSIDE,x=650,y=370)
 
 ###### BUTTONS FOR HISTORY UI #######
 ###### BUTTON IMAGES LOAD #######
-bk = ImageTk.PhotoImage(Image.open("back.png"))
-nx = ImageTk.PhotoImage(Image.open("next.png"))
-pv = ImageTk.PhotoImage(Image.open("prev.png"))
+bk = ImageTk.PhotoImage(Image.open("Images/back_button.png"))
+nx = ImageTk.PhotoImage(Image.open("Images/next_button.png"))
+pv = ImageTk.PhotoImage(Image.open("Images/prev_button.png"))
 
 #### BACK ####
 backB = Button (hist_frame, image=bk, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
@@ -203,5 +201,5 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
 recent_student()
-# ~ grey_recent_student()
+#grey_recent_student()
 window.mainloop() #Start
