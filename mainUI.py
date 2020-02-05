@@ -1,17 +1,19 @@
 from tkinter import *
 from PIL import ImageTk, Image
 import os,re
-
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 import time
+import raspiRFID
+import datetime
+
 
 hb_sensor = 21
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(hb_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# GPIO.setup(hb_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
-
+shuttlePrice='5'
+temp_DRIVERID='13'
 shflag = 0
 counter = 0
 grey_flag = 0
@@ -20,20 +22,20 @@ Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 RFID_reader1 = SimpleMFRC522()
 
-def grey_toggle(channel):
-    global grey_flag
-    if(GPIO.input(hb_sensor)==GPIO.HIGH):
-        grey_flag = 1
-        main_frame.pack_forget()
-        hist_frame.pack_forget()
-        grey_frame.pack(expand=1,fill=BOTH)
-        #grey_recent.config(text="")
-    else:
-        grey_flag = 0   
-        grey_frame.pack_forget()
-        main_frame.pack(expand=1,fill=BOTH)
+# def grey_toggle(channel):
+    # global grey_flag
+    # if(GPIO.input(hb_sensor)==GPIO.HIGH):
+        # grey_flag = 1
+        # main_frame.pack_forget()
+        # hist_frame.pack_forget()
+        # grey_frame.pack(expand=1,fill=BOTH)
+        # #grey_recent.config(text="")
+    # else:
+        # grey_flag = 0   
+        # grey_frame.pack_forget()
+        # main_frame.pack(expand=1,fill=BOTH)
     
-GPIO.add_event_detect(hb_sensor,GPIO.RISING,callback=grey_toggle)
+# GPIO.add_event_detect(hb_sensor,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -54,28 +56,37 @@ def is_wifi():
     window.after(5000, is_wifi)
 
 def recent_student():
-     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     print(rfid_idnum)
-     main_recent.config(text=rfid_idnum,anchor="w")
-     window.after(100, recent_student)
+    rfid_uid, text = RFID_reader1.read_no_block()
+    rfid_idNum=raspiRFID.checkUID(rfid_uid)
+    print('IDNUM')
+    print(rfid_idNum)
+    if(rfid_idNum!=None):
+            transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum),int(shuttlePrice),str(temp_DRIVERID))]
+            raspiRFID.inputTransactiontoDB(transactionRecord)
+    else:
+            print('UID not in database')
+    
+    main_recent.config(text=rfid_idNum,anchor="w")
+    window.after(100, recent_student)
+    
 
-def grey_recent_student():
-     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     global counter
-     print(rfid_idnum)
+# def grey_recent_student():
+     # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+     # global counter
+     # print(rfid_idnum)
      
-     if(rfid_idnum!=None and grey_flag==1):
-         counter = 0
+     # if(rfid_idnum!=None and grey_flag==1):
+         # counter = 0
      
-     if(counter==40 and grey_flag==1):
-         print(counter)
-         counter = 0
-         grey_recent.config(text="",anchor="w")
-     elif(counter<40 and grey_flag==1):
-         counter = counter + 1
-         grey_recent.config(text=rfid_idnum,anchor="w")
+     # if(counter==40 and grey_flag==1):
+         # print(counter)
+         # counter = 0
+         # grey_recent.config(text="",anchor="w")
+     # elif(counter<40 and grey_flag==1):
+         # counter = counter + 1
+         # grey_recent.config(text=rfid_idnum,anchor="w")
      
-     window.after(100, grey_recent_student)
+     # window.after(100, grey_recent_student)
 
 def sync():
     print("Sync!")
@@ -192,5 +203,5 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
 recent_student()
-grey_recent_student()
+# ~ grey_recent_student()
 window.mainloop() #Start
