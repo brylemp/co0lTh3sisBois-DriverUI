@@ -19,9 +19,8 @@ Total_Passenger = 300
 Driver_Name = "Dela Cruz, Juan Paolo"
 
 RFID_reader1 = SimpleMFRC522()
-# GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
-# GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
 
 def is_wifi():
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -41,36 +40,38 @@ def is_wifi():
     wifi_label.image=replace
     window.after(5000, is_wifi)
 
-# def grey_toggle(channel):
-    # global grey_flag
-    # if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
-        # grey_flag = 1
-        # main_frame.pack_forget()
-        # hist_frame.pack_forget()
-        # grey_frame.pack(expand=1,fill=BOTH)
-        # #grey_recent.config(text="")
-    # else:
-        # grey_flag = 0   
-        # grey_frame.pack_forget()
-        # main_frame.pack(expand=1,fill=BOTH)
+def grey_toggle(channel):
+    global grey_flag
+    if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
+        grey_flag = 1
+        main_frame.pack_forget()
+        hist_frame.pack_forget()
+        grey_frame.pack(expand=1,fill=BOTH)
+        #grey_recent.config(text="")
+    else:
+        grey_flag = 0   
+        grey_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
 
-# def grey_recent_student():
-     # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     # global counter
-     # print(rfid_idnum)
+GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
+
+def grey_recent_student():
+     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+     global grey_counter
+     print(rfid_idnum)
      
-     # if(rfid_idnum!=None and grey_flag==1):
-         # counter = 0
+     if(rfid_idnum!=None and grey_flag==1):
+         grey_counter = 0
      
-     # if(counter==40 and grey_flag==1):
-         # print(counter)
-         # counter = 0
-         # grey_recent.config(text="",anchor="w")
-     # elif(counter<40 and grey_flag==1):
-         # counter = counter + 1
-         # grey_recent.config(text=rfid_idnum,anchor="w")
+     if(grey_counter==40 and grey_flag==1):
+         print(grey_counter)
+         grey_counter = 0
+         grey_recent.config(text="",anchor="w")
+     elif(grey_counter<40 and grey_flag==1):
+         grey_counter = grey_counter + 1
+         grey_recent.config(text=rfid_idnum,anchor="w")
      
-     # window.after(100, grey_recent_student)
+     window.after(100, grey_recent_student)
 
 def recent_student():
     rfid_uid, text = RFID_reader1.read_no_block()
@@ -199,7 +200,11 @@ nextB.place(bordermode=OUTSIDE,x=465,y=380)
 prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
-is_wifi()
-recent_student()
-#grey_recent_student()
-window.mainloop() #Start
+try:
+    is_wifi()
+    recent_student()
+    grey_recent_student()
+    window.mainloop() #Start
+except KeyboardInterrupt:
+    print("WEW")
+    window.destroy()

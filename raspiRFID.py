@@ -12,8 +12,6 @@ reader = SimpleMFRC522()
 temp_DRIVERID='13'
 shuttlePrice='5'
 
-
-
 def checkUID(UID):
         #read sqlite
         data=0
