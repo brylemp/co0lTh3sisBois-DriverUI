@@ -4,14 +4,58 @@ import pandas
 import csv
 import sqlite3
 import datetime
-# ~ import time
+import time
 
 #initialization
-
+# GPIO.setwarnings(False)
 reader = SimpleMFRC522()
 temp_DRIVERID='13'
 shuttlePrice='5'
-
+buzzer1=31
+def buzzSuccessful():
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(buzzer1,GPIO.LOW)
+        
+def buzzNoBalance():
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        
+def buzzNotInDB():
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.05)
+        GPIO.output(buzzer1,GPIO.LOW)
+        
+        
 def checkUID(UID):
         #read sqlite
         data=0
@@ -22,18 +66,19 @@ def checkUID(UID):
                 cursor.execute(sqlite_select_query, (UID, ))
                 print("Reading single row \n")
                 record = cursor.fetchone()
-                print(record)
-                if(record!=None):
-                        if(record[2]>=25):
-                                data=record[1]
-                                cursor.close()
-                                conn.close()
-                                return data
+                if(record[2]>=25):
+                        data=record[1]
+                        cursor.close()
+                        conn.close()
+                        return data
                 cursor.close()
                 conn.close()
-                
         except sqlite3.Error as error:
                 print("Failed to read single row from sqlite table", error)
+        # finally:
+                # cursor.close()
+                # conn.close()
+                
 
 def inputTransactiontoDB(transactionRecord):
         #Writing CSV to SQLITE
@@ -55,7 +100,8 @@ def readUID():
         #reading
         while True:
                 try:
-                     
+                        GPIO.setmode(GPIO.BOARD) 
+                        GPIO.setup(buzzer1,GPIO.OUT)
                         id, text = reader.read_no_block()
                         print(id)
                         print(text)
@@ -64,17 +110,13 @@ def readUID():
                         if(IDnum!=None):
                                 transactionRecord= [(str(id),str(datetime.datetime.now()),str(IDnum),int(shuttlePrice),str(temp_DRIVERID))]
                                 inputTransactiontoDB(transactionRecord)
-                             
-                       
+                                buzzSuccessful()
                         else:
                                 print('UID not in database')
-                               
-                        
-                        
+                                buzzNoBalance()
                 finally:
                         GPIO.cleanup()
     
-
 def main():
         while True:
                 try:
