@@ -7,7 +7,7 @@ import time
 import raspiRFID
 import datetime
 
-handbrake_sensor = 21
+handbrake_sensor = 29
 
 shuttlePrice='5'
 temp_DRIVERID='13'
@@ -75,14 +75,22 @@ def grey_recent_student():
 
 def recent_student():
     rfid_uid, text = RFID_reader1.read_no_block()
+    print(rfid_uid)
     rfid_idNum=raspiRFID.checkUID(rfid_uid)
     print('IDNUM')
     print(rfid_idNum)
+
     if(rfid_idNum!=None):
-            transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum),int(shuttlePrice),str(temp_DRIVERID))]
-            raspiRFID.inputTransactiontoDB(transactionRecord)
+            if(rfid_idNum[1]==1):
+                    transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                    raspiRFID.inputTransactiontoDB(transactionRecord)
+                    # raspiRFID.buzzSuccessful()
+            else:
+                    # raspiRFID.buzzNoBalance()
+                    pass
     else:
             print('UID not in database')
+            # raspiRFID.buzzNotInDB()
     
     main_recent.config(text=rfid_idNum,anchor="w")
     window.after(100, recent_student)
@@ -200,11 +208,8 @@ nextB.place(bordermode=OUTSIDE,x=465,y=380)
 prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
-try:
-    is_wifi()
-    recent_student()
-    grey_recent_student()
-    window.mainloop() #Start
-except KeyboardInterrupt:
-    print("WEW")
-    window.destroy()
+is_wifi()
+recent_student()
+grey_recent_student()
+window.mainloop() #Start
+

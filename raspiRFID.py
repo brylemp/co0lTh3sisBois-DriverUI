@@ -7,7 +7,7 @@ import datetime
 import time
 
 #initialization
-# GPIO.setwarnings(False)
+GPIO.setwarnings(False)
 reader = SimpleMFRC522()
 temp_DRIVERID='13'
 shuttlePrice='5'
@@ -58,7 +58,7 @@ def buzzNotInDB():
         
 def checkUID(UID):
         #read sqlite
-        data=0
+        data=None
         try:
                 conn=sqlite3.connect('shuttle1.db')
                 cursor=conn.cursor()
@@ -66,11 +66,16 @@ def checkUID(UID):
                 cursor.execute(sqlite_select_query, (UID, ))
                 print("Reading single row \n")
                 record = cursor.fetchone()
-                if(record[2]>=25):
-                        data=record[1]
-                        cursor.close()
-                        conn.close()
+                print(record)
+                if(record!=None):
+                        data=[record[1],0]
+                        if(record[2]>=25):
+                                data=[record[1],1]
+                                cursor.close()
+                                conn.close()
                         return data
+                else:
+                        return None
                 cursor.close()
                 conn.close()
         except sqlite3.Error as error:
@@ -102,28 +107,32 @@ def readUID():
                 try:
                         GPIO.setmode(GPIO.BOARD) 
                         GPIO.setup(buzzer1,GPIO.OUT)
-                        id, text = reader.read_no_block()
+                        id, text = reader.read()
                         print(id)
                         print(text)
                         IDnum=checkUID(id)
                         print(IDnum)
                         if(IDnum!=None):
-                                transactionRecord= [(str(id),str(datetime.datetime.now()),str(IDnum),int(shuttlePrice),str(temp_DRIVERID))]
-                                inputTransactiontoDB(transactionRecord)
-                                buzzSuccessful()
+                                if(IDnum[1]==1):
+                                        transactionRecord= [(str(id),str(datetime.datetime.now()),str(IDnum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                                        inputTransactiontoDB(transactionRecord)
+                                        buzzSuccessful()
+                                else:
+                                        buzzNoBalance()
                         else:
                                 print('UID not in database')
-                                buzzNoBalance()
+                                buzzNotInDB()
                 finally:
                         GPIO.cleanup()
     
-def main():
-        while True:
-                try:
-                        readUID()
-                except:
-                        print('Shuttle Function Error ... running again ... \n')
-                        input("Press Enter to run again...")
+
+# if __name__ == "__main__":
+        # while True:
+                # try:
+                        # readUID()
+                # except:
+                        # print('Shuttle Function Error ... running again ... \n')
+                        # input("Press Enter to run again...")
                 
 
         
