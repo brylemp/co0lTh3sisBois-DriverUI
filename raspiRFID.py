@@ -11,49 +11,49 @@ GPIO.setwarnings(False)
 # reader = SimpleMFRC522()
 # temp_DRIVERID='13'
 # shuttlePrice='5'
-buzzer1=31
-def buzzSuccessful():
-        GPIO.output(buzzer1,GPIO.HIGH)
+# buzzer=31
+def buzzSuccessful(buzzer):
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.5)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         
 def buzzNoBalance():
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         
 def buzzNotInDB():
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.HIGH)
+        GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
-        GPIO.output(buzzer1,GPIO.LOW)
+        GPIO.output(buzzer,GPIO.LOW)
         
         
 def checkUID(UID):
@@ -106,7 +106,7 @@ def inputTransactiontoDB(transactionRecord):
 #         while True:
 #                 try:
 #                         GPIO.setmode(GPIO.BOARD) 
-#                         GPIO.setup(buzzer1,GPIO.OUT)
+#                         GPIO.setup(buzzer,GPIO.OUT)
 #                         id, text = reader.read()
 #                         print(id)
 #                         print(text)

@@ -24,6 +24,10 @@ shuttlePrice='5'
 temp_DRIVERID='13'
 RFID_reader1 = SimpleMFRC522()
 RFID_reader2 = raspiRFID2.SimpleMFRC522a()
+buzzer1=31
+buzzer2=37
+# GPIO.setup(buzzer1,GPIO.OUT)
+# GPIO.setup(buzzer2,GPIO.OUT)
 
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
@@ -89,14 +93,14 @@ def recent_student():
             if(rfid_idNum[1]==1):
                     transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
                     raspiRFID.inputTransactiontoDB(transactionRecord)
-                    # raspiRFID.buzzSuccessful()
+                    # raspiRFID.buzzSuccessful(buzzer1)
                     main_recent.config(text=rfid_idNum,anchor="w")
             else:
-                    # raspiRFID.buzzNoBalance()
+                    # raspiRFID.buzzNoBalance(buzzer1)
                     pass
     else:
             print('UID not in database')
-            # raspiRFID.buzzNotInDB()
+            # raspiRFID.buzzNotInDB(buzzer1)
 
     #check seocnd RFID reader (RFID_reader2)
     rfid_uid2, text2 = RFID_reader2.read_no_block()
@@ -107,14 +111,14 @@ def recent_student():
             if(rfid_idNum2[1]==1):
                     transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
                     raspiRFID.inputTransactiontoDB(transactionRecord)
-                    # raspiRFID.buzzSuccessful()
+                    # raspiRFID.buzzSuccessful(buzzer2)
                     main_recent.config(text=rfid_idNum2,anchor="w")
             else:
-                    # raspiRFID.buzzNoBalance()
+                    # raspiRFID.buzzNoBalance(buzzer2)
                     pass
     else:
             print('UID not in database')
-            # raspiRFID.buzzNotInDB()
+            # raspiRFID.buzzNotInDB(buzzer2)
 
     window.after(100, recent_student)
 
