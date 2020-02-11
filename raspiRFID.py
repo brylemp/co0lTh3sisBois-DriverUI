@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from mfrc522 import SimpleMFRC522
+# from mfrc522 import SimpleMFRC522
 import pandas
 import csv
 import sqlite3
@@ -8,9 +8,9 @@ import time
 
 #initialization
 GPIO.setwarnings(False)
-reader = SimpleMFRC522()
-temp_DRIVERID='13'
-shuttlePrice='5'
+# reader = SimpleMFRC522()
+# temp_DRIVERID='13'
+# shuttlePrice='5'
 buzzer1=31
 def buzzSuccessful():
         GPIO.output(buzzer1,GPIO.HIGH)
@@ -101,29 +101,29 @@ def inputTransactiontoDB(transactionRecord):
         print('Added to transactionDB')
 
 
-def readUID():
-        #reading
-        while True:
-                try:
-                        GPIO.setmode(GPIO.BOARD) 
-                        GPIO.setup(buzzer1,GPIO.OUT)
-                        id, text = reader.read()
-                        print(id)
-                        print(text)
-                        IDnum=checkUID(id)
-                        print(IDnum)
-                        if(IDnum!=None):
-                                if(IDnum[1]==1):
-                                        transactionRecord= [(str(id),str(datetime.datetime.now()),str(IDnum[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                                        inputTransactiontoDB(transactionRecord)
-                                        buzzSuccessful()
-                                else:
-                                        buzzNoBalance()
-                        else:
-                                print('UID not in database')
-                                buzzNotInDB()
-                finally:
-                        GPIO.cleanup()
+# def readUID():
+#         #reading
+#         while True:
+#                 try:
+#                         GPIO.setmode(GPIO.BOARD) 
+#                         GPIO.setup(buzzer1,GPIO.OUT)
+#                         id, text = reader.read()
+#                         print(id)
+#                         print(text)
+#                         IDnum=checkUID(id)
+#                         print(IDnum)
+#                         if(IDnum!=None):
+#                                 if(IDnum[1]==1):
+#                                         transactionRecord= [(str(id),str(datetime.datetime.now()),str(IDnum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+#                                         inputTransactiontoDB(transactionRecord)
+#                                         buzzSuccessful()
+#                                 else:
+#                                         buzzNoBalance()
+#                         else:
+#                                 print('UID not in database')
+#                                 buzzNotInDB()
+#                 finally:
+#                         GPIO.cleanup()
     
 
 # if __name__ == "__main__":
