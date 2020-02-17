@@ -86,9 +86,9 @@ def grey_recent_student():
 def recent_student():
     #check first RFID reader (RFID_reader1)
     rfid_uid, text = RFID_reader1.read_no_block()
-    print("RFID1 UID="+string(rfid_uid))
+    print("RFID1 UID="+str(rfid_uid))
     rfid_idNum=raspiRFID.checkUID(rfid_uid)
-    print("IDNUM="+string(rfid_idNum))
+    print("IDNUM="+str(rfid_idNum))
     if(rfid_idNum!=None):
             if(rfid_idNum[1]==1):
                     transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
@@ -104,9 +104,9 @@ def recent_student():
 
     #check seocnd RFID reader (RFID_reader2)
     # rfid_uid2, text2 = RFID_reader2.read_no_block()
-    # print("RFID2 UID="+string(rfid_uid2))
+    # print("RFID2 UID="+str(rfid_uid2))
     # rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-    # print('IDNUM2='+string(rfid_idNum2))
+    # print('IDNUM2='+str(rfid_idNum2))
     # if(rfid_idNum2!=None):
     #         if(rfid_idNum2[1]==1):
     #                 transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
