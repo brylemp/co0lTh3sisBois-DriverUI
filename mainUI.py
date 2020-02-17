@@ -103,22 +103,22 @@ def recent_student():
             # raspiRFID.buzzNotInDB(buzzer1)
 
     #check seocnd RFID reader (RFID_reader2)
-    rfid_uid2, text2 = RFID_reader2.read_no_block()
-    print("RFID2 UID="+string(rfid_uid2))
-    rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-    print('IDNUM2='+string(rfid_idNum2))
-    if(rfid_idNum2!=None):
-            if(rfid_idNum2[1]==1):
-                    transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    # raspiRFID.buzzSuccessful(buzzer2)
-                    main_recent.config(text=rfid_idNum2,anchor="w")
-            else:
-                    # raspiRFID.buzzNoBalance(buzzer2)
-                    pass
-    else:
-            print('UID not in database')
-            # raspiRFID.buzzNotInDB(buzzer2)
+    # rfid_uid2, text2 = RFID_reader2.read_no_block()
+    # print("RFID2 UID="+string(rfid_uid2))
+    # rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
+    # print('IDNUM2='+string(rfid_idNum2))
+    # if(rfid_idNum2!=None):
+    #         if(rfid_idNum2[1]==1):
+    #                 transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
+    #                 raspiRFID.inputTransactiontoDB(transactionRecord)
+    #                 # raspiRFID.buzzSuccessful(buzzer2)
+    #                 main_recent.config(text=rfid_idNum2,anchor="w")
+    #         else:
+    #                 # raspiRFID.buzzNoBalance(buzzer2)
+    #                 pass
+    # else:
+    #         print('UID not in database')
+    #         # raspiRFID.buzzNotInDB(buzzer2)
 
     window.after(100, recent_student)
 
