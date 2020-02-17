@@ -120,7 +120,9 @@ def recent_student():
     #         print('UID not in database')
     #         # raspiRFID.buzzNotInDB(buzzer2)
 
-    window.after(100, recent_student)
+    # window.after(100, recent_student)
+    window.after(100, threading.Thread(target=recent_student).start())
+    
 
 def sync():
     print("Sync!")
