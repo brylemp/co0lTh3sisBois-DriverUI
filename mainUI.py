@@ -32,7 +32,8 @@ buzzer2=37
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
 
-def is_wifi():
+def refresh():
+    # WIFI CHECK
     wat = os.popen('iwgetid').read() ### RASPI ###
     watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
     watt = ''.join(watt) ##CONVERT LIST TO STRING##
@@ -48,7 +49,60 @@ def is_wifi():
         
     wifi_label.config(image=replace)
     wifi_label.image=replace
-    window.after(5000, is_wifi)
+
+    #GREY RFID
+    rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+    global grey_counter
+    print(rfid_idnum)
+    
+    if(rfid_idnum!=None and grey_flag==1):
+        grey_counter = 0
+    
+    if(grey_counter==40 and grey_flag==1):
+        print(grey_counter)
+        grey_counter = 0
+        grey_recent.config(text="",anchor="w")
+    elif(grey_counter<40 and grey_flag==1):
+        grey_counter = grey_counter + 1
+        grey_recent.config(text=rfid_idnum,anchor="w")
+    
+    #RFID READER
+    rfid_uid, text = RFID_reader1.read_no_block()
+    print("RFID1 UID="+str(rfid_uid))
+    rfid_idNum=raspiRFID.checkUID(rfid_uid)
+    print("IDNUM="+str(rfid_idNum))
+    if(rfid_idNum!=None):
+        if(rfid_idNum[1]==1):
+            transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+            raspiRFID.inputTransactiontoDB(transactionRecord)
+            # raspiRFID.buzzSuccessful(buzzer1)
+            main_recent.config(text=rfid_idNum,anchor="w")
+        else:
+            # raspiRFID.buzzNoBalance(buzzer1)
+            pass
+    else:
+        print('UID not in database')
+        # raspiRFID.buzzNotInDB(buzzer1)
+
+    #SECOND RFID READER
+    rfid_uid2, text2 = RFID_reader2.read_no_block()
+    print("RFID2 UID="+str(rfid_uid2))
+    rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
+    print('IDNUM2='+str(rfid_idNum2))
+    if(rfid_idNum2!=None):
+        if(rfid_idNum2[1]==1):
+            transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
+            raspiRFID.inputTransactiontoDB(transactionRecord)
+            # raspiRFID.buzzSuccessful(buzzer2)
+            main_recent.config(text=rfid_idNum2,anchor="w")
+        else:
+            # raspiRFID.buzzNoBalance(buzzer2)
+            pass
+    else:
+            print('UID not in database')
+            # raspiRFID.buzzNotInDB(buzzer2)
+
+    window.after(100, refresh)
 
 def grey_toggle(channel):
     global grey_flag
@@ -64,63 +118,6 @@ def grey_toggle(channel):
         main_frame.pack(expand=1,fill=BOTH)
 
 GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
-
-def grey_recent_student():
-     rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-     global grey_counter
-     print(rfid_idnum)
-     
-     if(rfid_idnum!=None and grey_flag==1):
-         grey_counter = 0
-     
-     if(grey_counter==40 and grey_flag==1):
-         print(grey_counter)
-         grey_counter = 0
-         grey_recent.config(text="",anchor="w")
-     elif(grey_counter<40 and grey_flag==1):
-         grey_counter = grey_counter + 1
-         grey_recent.config(text=rfid_idnum,anchor="w")
-     
-     window.after(100, grey_recent_student)
-
-def recent_student():
-    #check first RFID reader (RFID_reader1)
-    rfid_uid, text = RFID_reader1.read_no_block()
-    print("RFID1 UID="+str(rfid_uid))
-    rfid_idNum=raspiRFID.checkUID(rfid_uid)
-    print("IDNUM="+str(rfid_idNum))
-    if(rfid_idNum!=None):
-            if(rfid_idNum[1]==1):
-                    transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    # raspiRFID.buzzSuccessful(buzzer1)
-                    main_recent.config(text=rfid_idNum,anchor="w")
-            else:
-                    # raspiRFID.buzzNoBalance(buzzer1)
-                    pass
-    else:
-            print('UID not in database')
-            # raspiRFID.buzzNotInDB(buzzer1)
-
-    #check seocnd RFID reader (RFID_reader2)
-    # rfid_uid2, text2 = RFID_reader2.read_no_block()
-    # print("RFID2 UID="+str(rfid_uid2))
-    # rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-    # print('IDNUM2='+str(rfid_idNum2))
-    # if(rfid_idNum2!=None):
-    #         if(rfid_idNum2[1]==1):
-    #                 transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
-    #                 raspiRFID.inputTransactiontoDB(transactionRecord)
-    #                 # raspiRFID.buzzSuccessful(buzzer2)
-    #                 main_recent.config(text=rfid_idNum2,anchor="w")
-    #         else:
-    #                 # raspiRFID.buzzNoBalance(buzzer2)
-    #                 pass
-    # else:
-    #         print('UID not in database')
-    #         # raspiRFID.buzzNotInDB(buzzer2)
-
-    window.after(250, recent_student)
 
 
 def sync():
@@ -236,8 +233,6 @@ nextB.place(bordermode=OUTSIDE,x=465,y=380)
 prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
-is_wifi()
-recent_student()
-grey_recent_student()
+refresh()
 window.mainloop() #Start
 
