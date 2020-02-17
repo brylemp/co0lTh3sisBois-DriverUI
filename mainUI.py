@@ -7,7 +7,7 @@ import time
 import datetime
 import raspiRFID
 import raspiRFID2
-
+import threading
 
 handbrake_sensor = 29
 
@@ -210,7 +210,9 @@ showhideB = Button (main_frame, image=showhide_image, width=182, height=74, high
 showhideB.place(bordermode=OUTSIDE,x=650,y=258)
 
 #### HISTORY ####
-histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
+# histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
+#subject to test
+histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=threading.Thread(target=[main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)]).start())
 histB.place(bordermode=OUTSIDE,x=438,y=370)
 
 #### SHUTDOWN ####
