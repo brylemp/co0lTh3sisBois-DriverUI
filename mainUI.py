@@ -139,11 +139,6 @@ def showhide(main_totalfare,main_totalpass):
         main_totalpass.config(text=Total_Passenger)
         showhide_flag = 0
 
-#Called when history button is clicked
-def historyFrame(): 
-    main_frame.pack_forget()
-    hist_frame.pack(expand=1,fill=BOTH)
-
 ##### WINDOW #####
 window = Tk()
 window.geometry("848x480") #Size for Window
@@ -215,9 +210,7 @@ showhideB = Button (main_frame, image=showhide_image, width=182, height=74, high
 showhideB.place(bordermode=OUTSIDE,x=650,y=258)
 
 #### HISTORY ####
-# histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
-#subject to test
-histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=threading.Thread(target=historyFrame).start())
+histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
 histB.place(bordermode=OUTSIDE,x=438,y=370)
 
 #### SHUTDOWN ####
@@ -243,7 +236,8 @@ prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
-recent_student()
+# recent_student()
+threading.Thread(target=recent_student).start()
 grey_recent_student()
 window.mainloop() #Start
 
