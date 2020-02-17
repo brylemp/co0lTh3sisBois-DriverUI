@@ -138,7 +138,12 @@ def showhide(main_totalfare,main_totalpass):
         main_totalfare.config(text=TTF)
         main_totalpass.config(text=Total_Passenger)
         showhide_flag = 0
-        
+
+#Called when history button is clicked
+def historyFrame(): 
+    main_frame.pack_forget()
+    hist_frame.pack(expand=1,fill=BOTH)
+
 ##### WINDOW #####
 window = Tk()
 window.geometry("848x480") #Size for Window
@@ -212,7 +217,7 @@ showhideB.place(bordermode=OUTSIDE,x=650,y=258)
 #### HISTORY ####
 # histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
 #subject to test
-histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=threading.Thread(target=[main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)]).start())
+histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=threading.Thread(target=historyFrame).start())
 histB.place(bordermode=OUTSIDE,x=438,y=370)
 
 #### SHUTDOWN ####
