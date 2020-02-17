@@ -120,9 +120,8 @@ def recent_student():
     #         print('UID not in database')
     #         # raspiRFID.buzzNotInDB(buzzer2)
 
-    # window.after(100, recent_student)
-    window.after(100, threading.Thread(target=recent_student).start())
-    
+    window.after(250, recent_student)
+
 
 def sync():
     print("Sync!")
@@ -238,8 +237,7 @@ prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 is_wifi()
-# recent_student()
-threading.Thread(target=recent_student).start()
+recent_student()
 grey_recent_student()
 window.mainloop() #Start
 
