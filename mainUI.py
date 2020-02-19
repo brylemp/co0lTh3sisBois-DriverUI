@@ -31,7 +31,9 @@ buzzer2=37
 
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
-
+GPIO.setmode(GPIO.BOARD) 
+GPIO.setup(buzzer1,GPIO.OUT)
+GPIO.setup(buzzer2,GPIO.OUT)
 blockedAccounts=[]
 timeWindow=60
 
@@ -95,17 +97,17 @@ def refresh():
     print("RFID1 UID="+str(rfid_uid))
     rfid_idNum=raspiRFID.checkUID(rfid_uid)
     print("IDNUM="+str(rfid_idNum))
-    if(not findIfBlocked(id)):
+    if(not findIfBlocked(rfid_idNum)):
         if(rfid_idNum!=None):
             if(rfid_idNum[1]==1):
-                transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
                 raspiRFID.inputTransactiontoDB(transactionRecord)
-                #raspiRFID.buzzSuccessful(buzzer1)
+                raspiRFID.buzzSuccessful(buzzer1)
                 #add to blocked list
-                blockedAccounts.append([id,time.time()])
+                blockedAccounts.append([rfid_idNum,time.time()])
                 main_recent.config(text=rfid_idNum,anchor="w")
             else:
-                #raspiRFID.buzzNoBalance(buzzer1)
+                raspiRFID.buzzNoBalance(buzzer1)
                 pass
         else:
             print('UID not in database')
