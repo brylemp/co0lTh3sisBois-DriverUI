@@ -23,7 +23,7 @@ Driver_Name = "Dela Cruz, Juan Paolo"
 shuttlePrice='5'
 temp_DRIVERID='13'
 RFID_reader1 = SimpleMFRC522()
-RFID_reader2 = raspiRFID2.SimpleMFRC522a()
+# RFID_reader2 = raspiRFID2.SimpleMFRC522a()
 buzzer1=31
 buzzer2=37
 # GPIO.setup(buzzer1,GPIO.OUT)
@@ -84,23 +84,23 @@ def refresh():
         print('UID not in database')
         # raspiRFID.buzzNotInDB(buzzer1)
 
-    #SECOND RFID READER
-    rfid_uid2, text2 = RFID_reader2.read_no_block()
-    print("RFID2 UID="+str(rfid_uid2))
-    rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-    print('IDNUM2='+str(rfid_idNum2))
-    if(rfid_idNum2!=None):
-        if(rfid_idNum2[1]==1):
-            transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
-            raspiRFID.inputTransactiontoDB(transactionRecord)
-            # raspiRFID.buzzSuccessful(buzzer2)
-            main_recent.config(text=rfid_idNum2,anchor="w")
-        else:
-            # raspiRFID.buzzNoBalance(buzzer2)
-            pass
-    else:
-            print('UID not in database')
-            # raspiRFID.buzzNotInDB(buzzer2)
+    # #SECOND RFID READER
+    # rfid_uid2, text2 = RFID_reader2.read_no_block()
+    # print("RFID2 UID="+str(rfid_uid2))
+    # rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
+    # print('IDNUM2='+str(rfid_idNum2))
+    # if(rfid_idNum2!=None):
+    #     if(rfid_idNum2[1]==1):
+    #         transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
+    #         raspiRFID.inputTransactiontoDB(transactionRecord)
+    #         # raspiRFID.buzzSuccessful(buzzer2)
+    #         main_recent.config(text=rfid_idNum2,anchor="w")
+    #     else:
+    #         # raspiRFID.buzzNoBalance(buzzer2)
+    #         pass
+    # else:
+    #         print('UID not in database')
+    #         # raspiRFID.buzzNotInDB(buzzer2)
 
     window.after(100, refresh)
 
@@ -172,7 +172,13 @@ main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3",
 main_drivername.place(x=10,y=445) 
 
 main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")
-main_recent.place(x=540,y=58) 
+main_recent.place(x=543,y=58) 
+
+main_tap_status = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",24), text="Success!")
+main_tap_status.place(x=570,y=110) 
+
+main_sync_status = Label(main_frame, anchor="center", height="2", width="15", bd=0, bg="#e3e3e3", fg="#a90011", font=("ArialUnicodeMS",24), text="Last Synced\n03/23/20 12:02")
+main_sync_status.place(x=509,y=160) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -201,19 +207,19 @@ hist_image = ImageTk.PhotoImage(Image.open("Images/hist_button.png"))
 
 #### SYNC ####
 syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: sync())
-syB.place(bordermode=OUTSIDE,x=438,y=258)
+syB.place(bordermode=OUTSIDE,x=448,y=278)
 
 #### SHOW/HIDE ####
 showhideB = Button (main_frame, image=showhide_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: showhide(main_totalfare,main_totalpass))
-showhideB.place(bordermode=OUTSIDE,x=650,y=258)
+showhideB.place(bordermode=OUTSIDE,x=640,y=278)
 
 #### HISTORY ####
 histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
-histB.place(bordermode=OUTSIDE,x=438,y=370)
+histB.place(bordermode=OUTSIDE,x=448,y=370)
 
 #### SHUTDOWN ####
 shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=window.destroy) 
-shutdownB.place(bordermode=OUTSIDE,x=650,y=370)
+shutdownB.place(bordermode=OUTSIDE,x=640,y=370)
 
 ###### BUTTONS FOR HISTORY UI #######
 ###### BUTTON IMAGES LOAD #######
