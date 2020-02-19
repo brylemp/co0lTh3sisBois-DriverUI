@@ -32,6 +32,28 @@ buzzer2=37
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
 
+blockedAccounts=[]
+timeWindow=60
+
+def temporaryBlockFunc():
+        global blockedAccounts
+        toRemove=[]
+        for accounts in blockedAccounts:
+                print(accounts)
+                print(time.time()-accounts[1])
+                if(time.time()-accounts[1]>timeWindow):
+                        toRemove.append(accounts)
+                        print(toRemove)
+        for x in toRemove:
+                print("Remove="+str(x))
+                blockedAccounts.remove(x)
+
+def findIfBlocked(compare):
+        for accounts in blockedAccounts:
+                if(accounts[0]==compare):
+                    return 1
+        return 0
+        
 def refresh():
     # WIFI CHECK
     wat = os.popen('iwgetid').read() ### RASPI ###
@@ -66,23 +88,30 @@ def refresh():
         grey_counter = grey_counter + 1
         grey_recent.config(text=rfid_idnum,anchor="w")
     
+    #call blocking accounts func
+    temporaryBlockFunc()
     #RFID READER
     rfid_uid, text = RFID_reader1.read_no_block()
     print("RFID1 UID="+str(rfid_uid))
     rfid_idNum=raspiRFID.checkUID(rfid_uid)
     print("IDNUM="+str(rfid_idNum))
-    if(rfid_idNum!=None):
-        if(rfid_idNum[1]==1):
-            transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
-            raspiRFID.inputTransactiontoDB(transactionRecord)
-            # raspiRFID.buzzSuccessful(buzzer1)
-            main_recent.config(text=rfid_idNum,anchor="w")
+    if(not findIfBlocked(id)):
+        if(rfid_idNum!=None):
+            if(rfid_idNum[1]==1):
+                transactionRecord= [(str(id),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                raspiRFID.inputTransactiontoDB(transactionRecord)
+                #raspiRFID.buzzSuccessful(buzzer1)
+                #add to blocked list
+                blockedAccounts.append([id,time.time()])
+                main_recent.config(text=rfid_idNum,anchor="w")
+            else:
+                #raspiRFID.buzzNoBalance(buzzer1)
+                pass
         else:
-            # raspiRFID.buzzNoBalance(buzzer1)
-            pass
+            print('UID not in database')
+            #raspiRFID.buzzNotInDB(buzzer1)
     else:
-        print('UID not in database')
-        # raspiRFID.buzzNotInDB(buzzer1)
+        print("Blocked for 60 sec")
 
     # #SECOND RFID READER
     # rfid_uid2, text2 = RFID_reader2.read_no_block()

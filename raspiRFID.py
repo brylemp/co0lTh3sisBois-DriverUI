@@ -17,7 +17,7 @@ def buzzSuccessful(buzzer):
         time.sleep(0.5)
         GPIO.output(buzzer,GPIO.LOW)
         
-def buzzNoBalance():
+def buzzNoBalance(buzzer):
         GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
         GPIO.output(buzzer,GPIO.LOW)
@@ -30,7 +30,7 @@ def buzzNoBalance():
         time.sleep(0.05)
         GPIO.output(buzzer,GPIO.LOW)
         
-def buzzNotInDB():
+def buzzNotInDB(buzzer):
         GPIO.output(buzzer,GPIO.HIGH)
         time.sleep(0.05)
         GPIO.output(buzzer,GPIO.LOW)
