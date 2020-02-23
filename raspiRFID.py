@@ -99,7 +99,24 @@ def inputTransactiontoDB(transactionRecord):
         conn.close()
         print(transactionRecord)
         print('Added to transactionDB')
+        
+def updateAccountBalance(IDNum):
+    try:
+        conn=sqlite3.connect('shuttle1.db')
+        cursor=conn.cursor()
 
+        sql_update_query = """UPDATE accountBalance set Balance = Balance-5 where IDNum = ?"""
+        cursor.execute(sql_update_query,(IDNum, ))
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except sqlite3.Error as error:
+        print("Error encountered in updating account balance for transactions",error)
+        input("Press Enter to continue...")
+    finally:
+        if (conn):
+            conn.close()
+            print("The SQLite connection is closed")
 
 # def readUID():
 #         #reading
