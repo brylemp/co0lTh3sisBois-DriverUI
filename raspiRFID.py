@@ -86,19 +86,27 @@ def checkUID(UID):
                 
 
 def inputTransactiontoDB(transactionRecord):
-        #Writing CSV to SQLITE
-        conn=sqlite3.connect('shuttle1.db')
-        cursor=conn.cursor()
+        try:
+                #Writing CSV to SQLITE
+                conn=sqlite3.connect('shuttle1.db')
+                cursor=conn.cursor()
 
-        sqlite_insert_query = """INSERT INTO transactions(uid,Date_Time,Passenger_ID,Amount,Driver_ID)
-                                VALUES (?, ?, ?, ?, ?);"""
+                sqlite_insert_query = """INSERT INTO transactions(uid,Date_Time,Passenger_ID,Amount,Driver_ID)
+                                        VALUES (?, ?, ?, ?, ?);"""
 
-        cursor.executemany(sqlite_insert_query, transactionRecord)
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print(transactionRecord)
-        print('Added to transactionDB')
+                cursor.executemany(sqlite_insert_query, transactionRecord)
+                conn.commit()
+                cursor.close()
+                conn.close()
+                print(transactionRecord)
+                print('Added to transactionDB')
+        except sqlite3.Error as error:
+                print("Error encountered in adding to transactions->",error)
+                input("Press Enter to continue...")
+        finally:
+                if (conn):
+                conn.close()
+                print("The SQLite connection is closed")
         
 def updateAccountBalance(IDNum):
     try:
