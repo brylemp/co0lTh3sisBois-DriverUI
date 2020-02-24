@@ -105,8 +105,8 @@ def inputTransactiontoDB(transactionRecord):
                 input("Press Enter to continue...")
         finally:
                 if (conn):
-                conn.close()
-                print("The SQLite connection is closed")
+                        conn.close()
+                        print("The SQLite connection is closed")
         
 def updateAccountBalance(IDNum):
     try:

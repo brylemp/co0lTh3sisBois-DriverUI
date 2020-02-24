@@ -8,10 +8,11 @@ import datetime
 import raspiRFID
 import raspiRFID2
 import threading
+import sqlite3
 
 handbrake_sensor = 29
-
-
+history_page_counter = 0
+history_page = []
 showhide_flag = 0
 grey_counter = 0
 grey_flag = 0
@@ -177,6 +178,76 @@ def showhide(main_totalfare,main_totalpass):
         main_totalpass.config(text=Total_Passenger)
         showhide_flag = 0
 
+def pageturn(nextt):
+    global history_page_counter
+    if nextt == 0:
+        history_page_counter+=1
+    else:
+        history_page_counter-=1
+    
+    if history_page_counter > len(history_page)-1:
+        history_page_counter =  len(history_page)-1
+    elif history_page_counter < 0:
+        history_page_counter = 0
+
+    history_date1.config(text=history_page[history_page_counter][0]['Date'])
+    history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
+    history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
+
+    history_date2.config(text=history_page[history_page_counter][1]['Date'])
+    history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
+    history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
+
+    history_date3.config(text=history_page[history_page_counter][2]['Date'])
+    history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
+    history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
+
+def history_frame_open():
+    global history_page
+
+    main_frame.pack_forget()
+    hist_frame.pack(expand=1,fill=BOTH)
+
+    conn = sqlite3.connect('shuttle1.db')
+
+    cursor = conn.execute("SELECT Driver_id, Date, Total_Amount from driverSummary")
+    histrecord = []
+    for row in cursor:
+        driverquery = {
+            'Driver_id':row[0],
+            'Date':row[1],
+            'Total_Amount':row[2]
+        }
+        histrecord.append(driverquery)
+
+    while (1):
+        if len(histrecord)%3 != 0:
+            driverquery = {
+                'Driver_id':' ',
+                'Date':' ',
+                'Total_Amount':0
+            }
+            histrecord.append(driverquery)
+            break
+            
+    history_page = []
+    for x in range(int(len(histrecord)/3)):
+        history_page.append(histrecord[x*3:(x*3)+3])
+
+    history_date1.config(text=history_page[history_page_counter][0]['Date'])
+    history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
+    history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
+
+    history_date2.config(text=history_page[history_page_counter][1]['Date'])
+    history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
+    history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
+
+    history_date3.config(text=history_page[history_page_counter][2]['Date'])
+    history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
+    history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
+        
+    conn.close()
+
 ##### WINDOW #####
 window = Tk()
 window.geometry("848x480") #Size for Window
@@ -226,10 +297,39 @@ wifi_label.place(x=10,y=10)
 
 ####### HISTORY UI BG through Pillow PIL ########
 hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
-hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_bg.png")) # BG through Pillow PIL
+# hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_bg.png")) # BG through Pillow PIL
+hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_emptybg.png")) # BG through Pillow PIL
 hist_label = Label(hist_frame, image=hist_bg_image) 
 hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
 hist_bg.pack()
+
+###### HISTORY UI LABELS ###########
+history_date1 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",30))
+history_date1.place(x=50,y=125)
+
+history_total_amount1 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_amount1.place(x=685,y=115)
+
+history_total_passenger1 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_passenger1.place(x=685,y=155)
+
+history_date2 = Label(hist_frame, width="10", height="1", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",30))
+history_date2.place(x=50,y=209)
+
+history_total_amount2 = Label(hist_frame, width="10", height="1", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_amount2.place(x=685,y=199)
+
+history_total_passenger2 = Label(hist_frame, width="10", height="1", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_passenger2.place(x=685,y=239)
+
+history_date3 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",30))
+history_date3.place(x=50,y=291)
+
+history_total_amount3 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_amount3.place(x=685,y=281)
+
+history_total_passenger3 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
+history_total_passenger3.place(x=685,y=321)
 
 ####### GREYED OUT UI BG through Pillow PIL ########
 grey_bg = Canvas(grey_frame, bg="#0e0e0e", height=480, width=848) 
@@ -254,7 +354,7 @@ showhideB = Button (main_frame, image=showhide_image, width=182, height=74, high
 showhideB.place(bordermode=OUTSIDE,x=640,y=278)
 
 #### HISTORY ####
-histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack_forget(),hist_frame.pack(expand=1,fill=BOTH)])
+histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: history_frame_open())
 histB.place(bordermode=OUTSIDE,x=448,y=370)
 
 #### SHUTDOWN ####
@@ -272,11 +372,11 @@ backB = Button (hist_frame, image=bk, width=182, height=74, highlightthickness=0
 backB.place(bordermode=OUTSIDE,x=25,y=20)
 
 #### NEXT ####
-nextB = Button (hist_frame, image=nx, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+nextB = Button (hist_frame, image=nx, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: pageturn(0))
 nextB.place(bordermode=OUTSIDE,x=465,y=380)
 
 #### PREVIOUS ####
-prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: [main_frame.pack(expand=1,fill=BOTH),hist_frame.pack_forget()])
+prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: pageturn(1))
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
 
 refresh()
