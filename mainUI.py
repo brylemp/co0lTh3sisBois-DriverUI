@@ -19,8 +19,8 @@ grey_counter = 0
 grey_flag = 0
 Total_Fare = 1500
 Total_Passenger = 300
-Driver_Name = ""
-Driver_ID = ""
+Driver_Name = ("",)
+Driver_ID = ("",)
 
 #initialization for RFID readers
 shuttlePrice='5'
@@ -70,10 +70,10 @@ def refresh():
             print(row)
             if str(UID) == row[0]:
                 global Driver_ID, Driver_Name
-                Driver_ID = row[1]
-                Driver_Name = row[2]
+                Driver_ID = (row[1],)
+                Driver_Name = (row[2],)
                 print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
-                main_drivername.config(text=Driver_Name)
+                main_drivername.config(text=Driver_Name[0])
                 login_frame.pack_forget()
                 main_frame.pack(expand=1,fill=BOTH)
                 login = 1
@@ -229,7 +229,7 @@ def history_frame_open():
 
     conn = sqlite3.connect('shuttle1.db')
 
-    cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = %s" % (Driver_ID))
+    cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = ?", Driver_ID)
     rowexists = cursor.fetchone()
     if rowexists == None:
         print("None")
