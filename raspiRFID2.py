@@ -3,7 +3,7 @@ import spidev
 import signal
 import time
 import logging
-import pandas
+#import pandas
 import csv
 import sqlite3
 import datetime

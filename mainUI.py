@@ -10,6 +10,7 @@ import raspiRFID2
 import threading
 import sqlite3
 
+login = 0
 handbrake_sensor = 29
 history_page_counter = 0
 history_page = []
@@ -18,7 +19,6 @@ grey_counter = 0
 grey_flag = 0
 Total_Fare = 1500
 Total_Passenger = 300
-Driver_Name = "Dela Cruz, Juan Paolo"
 
 #initialization for RFID readers
 shuttlePrice='5'
@@ -39,109 +39,123 @@ blockedAccounts=[]
 timeWindow=60
 
 def temporaryBlockFunc():
-        global blockedAccounts
-        toRemove=[]
-        for accounts in blockedAccounts:
-                print(accounts)
-                print(time.time()-accounts[1])
-                if(time.time()-accounts[1]>timeWindow):
-                        toRemove.append(accounts)
-                        print(toRemove)
-        for x in toRemove:
-                print("Remove="+str(x))
-                blockedAccounts.remove(x)
+    global blockedAccounts
+    toRemove=[]
+    for accounts in blockedAccounts:
+            print(accounts)
+            print(time.time()-accounts[1])
+            if(time.time()-accounts[1]>timeWindow):
+                    toRemove.append(accounts)
+                    print(toRemove)
+    for x in toRemove:
+            print("Remove="+str(x))
+            blockedAccounts.remove(x)
 
 def findIfBlocked(compare):
-        for accounts in blockedAccounts:
-                if(accounts[0]==compare):
-                    return 1
-        return 0
+    for accounts in blockedAccounts:
+            if(accounts[0]==compare):
+                return 1
+    return 0
         
 def refresh():
-    # WIFI CHECK
-    wat = os.popen('iwgetid').read() ### RASPI ###
-    watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
-    watt = ''.join(watt) ##CONVERT LIST TO STRING##
-
-    # ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
-    # x = ipadd.find('Profile                : ') + 25
-    # watt = ipadd[x:].split(' ')[0]
-
-    if watt == "thesisShuttle":
-        replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
+    global login
+    if login == 0:
+        login_reader = SimpleMFRC522()
+        UID,IDNUM = login_reader.read_no_block()
+        conn = sqlite3.connect('shuttle1.db')
+        cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
+        for row in cursor:
+            print(row)
+            if str(UID) == row[0]:
+                print("DRIVER FOUND: %s - %s" % (row[2],row[1]))
+                main_drivername.config(text=row[2])
+                login_frame.pack_forget()
+                main_frame.pack(expand=1,fill=BOTH)
+                login = 1
     else:
-        replace = ImageTk.PhotoImage(Image.open("Images/nowifi.png"))
+        # WIFI CHECK
+        wat = os.popen('iwgetid').read() ### RASPI ###
+        watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
+        watt = ''.join(watt) ##CONVERT LIST TO STRING##
+
+        # ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
+        # x = ipadd.find('Profile                : ') + 25
+        # watt = ipadd[x:].split(' ')[0]
+
+        if watt == "thesisShuttle":
+            replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
+        else:
+            replace = ImageTk.PhotoImage(Image.open("Images/nowifi.png"))
+            
+        wifi_label.config(image=replace)
+        wifi_label.image=replace
+
+        #GREY RFID
+        rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+        global grey_counter
+        print(rfid_idnum)
         
-    wifi_label.config(image=replace)
-    wifi_label.image=replace
+        if(rfid_idnum!=None and grey_flag==1):
+            grey_counter = 0
+        
+        if(grey_counter==40 and grey_flag==1):
+            print(grey_counter)
+            grey_counter = 0
+            grey_recent.config(text="",anchor="w")
+        elif(grey_counter<40 and grey_flag==1):
+            grey_counter = grey_counter + 1
+            grey_recent.config(text=rfid_idnum,anchor="w")
+        
+        # call blocking accounts func
+        temporaryBlockFunc()
 
-    #GREY RFID
-    rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-    global grey_counter
-    print(rfid_idnum)
-    
-    if(rfid_idnum!=None and grey_flag==1):
-        grey_counter = 0
-    
-    if(grey_counter==40 and grey_flag==1):
-        print(grey_counter)
-        grey_counter = 0
-        grey_recent.config(text="",anchor="w")
-    elif(grey_counter<40 and grey_flag==1):
-        grey_counter = grey_counter + 1
-        grey_recent.config(text=rfid_idnum,anchor="w")
-    
-    #call blocking accounts func
-    temporaryBlockFunc()
-    #RFID READER
-    rfid_uid, text = RFID_reader1.read_no_block()
-    print("RFID1 UID="+str(rfid_uid))
-    rfid_idNum=raspiRFID.checkUID(rfid_uid)
-    print("IDNUM="+str(rfid_idNum))
-    
-    if(rfid_idNum!=None):
-        if(not findIfBlocked(rfid_idNum[0])):
-            if(rfid_idNum[1]==1):
-                transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                raspiRFID.inputTransactiontoDB(transactionRecord)
-                raspiRFID.buzzSuccessful(buzzer1)
-                #add to blocked list
-                blockedAccounts.append([rfid_idNum[0],time.time()])
-                main_recent.config(text=rfid_idNum[0],anchor="w")
+        # RFID READER
+        rfid_uid, text = RFID_reader1.read_no_block()
+        print("RFID1 UID="+str(rfid_uid))
+        rfid_idNum=raspiRFID.checkUID(rfid_uid)
+        print("IDNUM="+str(rfid_idNum))
+        
+        if(rfid_idNum!=None):
+            if(not findIfBlocked(rfid_idNum[0])):
+                if(rfid_idNum[1]==1):
+                    transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                    raspiRFID.inputTransactiontoDB(transactionRecord)
+                    raspiRFID.buzzSuccessful(buzzer1)
+                    #add to blocked list
+                    blockedAccounts.append([rfid_idNum[0],time.time()])
+                    main_recent.config(text=rfid_idNum[0],anchor="w")
+                else:
+                    raspiRFID.buzzNoBalance(buzzer1)
+                    pass
             else:
-                raspiRFID.buzzNoBalance(buzzer1)
-                pass
+                print("Blocked for 60 sec")
         else:
-            print("Blocked for 60 sec")
-    else:
-        print('UID not in database')
-        #raspiRFID.buzzNotInDB(buzzer1)
-    
-
-    # #SECOND RFID READER
-    rfid_uid2, text2 = RFID_reader2.read_no_block()
-    print("RFID2 UID="+str(rfid_uid2))
-    rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-    print('IDNUM2='+str(rfid_idNum2))
-    
-    if(rfid_idNum2!=None):
-        if(not findIfBlocked(rfid_idNum2[0])):
-            if(rfid_idNum2[1]==1):
-                transactionRecord= [(str(rfid_uid2),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                raspiRFID.inputTransactiontoDB(transactionRecord)
-                raspiRFID.buzzSuccessful(buzzer2)
-                #add to blocked list
-                blockedAccounts.append([rfid_idNum2[0],time.time()])
-                main_recent.config(text=rfid_idNum2[0],anchor="w")
-            else:
-                raspiRFID.buzzNoBalance(buzzer2)
-                pass
-        else:
-            print("Blocked for 60 sec")
-    else:
             print('UID not in database')
-            # raspiRFID.buzzNotInDB(buzzer2)
-   
+            #raspiRFID.buzzNotInDB(buzzer1)
+
+        #SECOND RFID READER
+        rfid_uid2, text2 = RFID_reader2.read_no_block()
+        print("RFID2 UID="+str(rfid_uid2))
+        rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
+        print('IDNUM2='+str(rfid_idNum2))
+        
+        if(rfid_idNum2!=None):
+            if(not findIfBlocked(rfid_idNum2[0])):
+                if(rfid_idNum2[1]==1):
+                    transactionRecord= [(str(rfid_uid2),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
+                    raspiRFID.inputTransactiontoDB(transactionRecord)
+                    raspiRFID.buzzSuccessful(buzzer2)
+                    #add to blocked list
+                    blockedAccounts.append([rfid_idNum2[0],time.time()])
+                    main_recent.config(text=rfid_idNum2[0],anchor="w")
+                else:
+                    raspiRFID.buzzNoBalance(buzzer2)
+                    pass
+            else:
+                print("Blocked for 60 sec")
+        else:
+                print('UID not in database')
+                # raspiRFID.buzzNotInDB(buzzer2)
 
     window.after(300, refresh)
 
@@ -254,15 +268,25 @@ window.geometry("848x480") #Size for Window
 # window.overrideredirect(1) #Remove window border
 window.resizable(False,False) #Prevent resize windows
 
-##### FRAME ######
+##### FRAMES ######
+login_frame = Frame(window)
+login_frame.pack(expand=1,fill=BOTH)
+
 main_frame = Frame(window)
-main_frame.pack(expand=1,fill=BOTH)
+main_frame.pack_forget()
 
 hist_frame = Frame(window)
 hist_frame.pack_forget()
 
 grey_frame = Frame(window)
 grey_frame.pack_forget()
+
+####### LOGIN UI BG through Pillow PIL ########
+login_bg = Canvas(login_frame, bg="#e3e3e3", height=480, width=848) 
+login_bg_image = ImageTk.PhotoImage(Image.open("Images/loginbg.png")) # BG through Pillow PIL
+login_label = Label(login_frame, image=login_bg_image) 
+login_label.place(x=0, y=0, relwidth=1, relheight=1) 
+login_bg.pack()
 
 ####### MAIN UI BG through Pillow PIL ########
 main_bg = Canvas(main_frame, bg="#e3e3e3", height=480, width=848) 
@@ -279,7 +303,7 @@ main_totalfare.place(x=70,y=32)
 main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=Total_Passenger)
 main_totalpass.place(x=70,y=282)
 
-main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15), text=Driver_Name)
+main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15))
 main_drivername.place(x=10,y=445) 
 
 main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")

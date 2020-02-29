@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 # from mfrc522 import SimpleMFRC522
-import pandas
+# import pandas
 import csv
 import sqlite3
 import datetime
