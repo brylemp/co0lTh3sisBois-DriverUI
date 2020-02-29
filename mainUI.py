@@ -19,6 +19,8 @@ grey_counter = 0
 grey_flag = 0
 Total_Fare = 1500
 Total_Passenger = 300
+Driver_Name = ""
+Driver_ID = ""
 
 #initialization for RFID readers
 shuttlePrice='5'
@@ -67,8 +69,11 @@ def refresh():
         for row in cursor:
             print(row)
             if str(UID) == row[0]:
-                print("DRIVER FOUND: %s - %s" % (row[2],row[1]))
-                main_drivername.config(text=row[2])
+                global Driver_ID, Driver_Name
+                Driver_ID = row[1]
+                Driver_Name = row[2]
+                print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                main_drivername.config(text=Driver_Name)
                 login_frame.pack_forget()
                 main_frame.pack(expand=1,fill=BOTH)
                 login = 1
@@ -90,72 +95,72 @@ def refresh():
         wifi_label.config(image=replace)
         wifi_label.image=replace
 
-        #GREY RFID
-        rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-        global grey_counter
-        print(rfid_idnum)
+        # #GREY RFID
+        # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+        # global grey_counter
+        # print(rfid_idnum)
         
-        if(rfid_idnum!=None and grey_flag==1):
-            grey_counter = 0
+        # if(rfid_idnum!=None and grey_flag==1):
+        #     grey_counter = 0
         
-        if(grey_counter==40 and grey_flag==1):
-            print(grey_counter)
-            grey_counter = 0
-            grey_recent.config(text="",anchor="w")
-        elif(grey_counter<40 and grey_flag==1):
-            grey_counter = grey_counter + 1
-            grey_recent.config(text=rfid_idnum,anchor="w")
+        # if(grey_counter==40 and grey_flag==1):
+        #     print(grey_counter)
+        #     grey_counter = 0
+        #     grey_recent.config(text="",anchor="w")
+        # elif(grey_counter<40 and grey_flag==1):
+        #     grey_counter = grey_counter + 1
+        #     grey_recent.config(text=rfid_idnum,anchor="w")
         
-        # call blocking accounts func
-        temporaryBlockFunc()
+        # # call blocking accounts func
+        # temporaryBlockFunc()
 
-        # RFID READER
-        rfid_uid, text = RFID_reader1.read_no_block()
-        print("RFID1 UID="+str(rfid_uid))
-        rfid_idNum=raspiRFID.checkUID(rfid_uid)
-        print("IDNUM="+str(rfid_idNum))
+        # # RFID READER
+        # rfid_uid, text = RFID_reader1.read_no_block()
+        # print("RFID1 UID="+str(rfid_uid))
+        # rfid_idNum=raspiRFID.checkUID(rfid_uid)
+        # print("IDNUM="+str(rfid_idNum))
         
-        if(rfid_idNum!=None):
-            if(not findIfBlocked(rfid_idNum[0])):
-                if(rfid_idNum[1]==1):
-                    transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    raspiRFID.buzzSuccessful(buzzer1)
-                    #add to blocked list
-                    blockedAccounts.append([rfid_idNum[0],time.time()])
-                    main_recent.config(text=rfid_idNum[0],anchor="w")
-                else:
-                    raspiRFID.buzzNoBalance(buzzer1)
-                    pass
-            else:
-                print("Blocked for 60 sec")
-        else:
-            print('UID not in database')
-            #raspiRFID.buzzNotInDB(buzzer1)
+        # if(rfid_idNum!=None):
+        #     if(not findIfBlocked(rfid_idNum[0])):
+        #         if(rfid_idNum[1]==1):
+        #             transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),str(temp_DRIVERID))]
+        #             raspiRFID.inputTransactiontoDB(transactionRecord)
+        #             raspiRFID.buzzSuccessful(buzzer1)
+        #             #add to blocked list
+        #             blockedAccounts.append([rfid_idNum[0],time.time()])
+        #             main_recent.config(text=rfid_idNum[0],anchor="w")
+        #         else:
+        #             raspiRFID.buzzNoBalance(buzzer1)
+        #             pass
+        #     else:
+        #         print("Blocked for 60 sec")
+        # else:
+        #     print('UID not in database')
+        #     #raspiRFID.buzzNotInDB(buzzer1)
 
-        #SECOND RFID READER
-        rfid_uid2, text2 = RFID_reader2.read_no_block()
-        print("RFID2 UID="+str(rfid_uid2))
-        rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-        print('IDNUM2='+str(rfid_idNum2))
+        # #SECOND RFID READER
+        # rfid_uid2, text2 = RFID_reader2.read_no_block()
+        # print("RFID2 UID="+str(rfid_uid2))
+        # rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
+        # print('IDNUM2='+str(rfid_idNum2))
         
-        if(rfid_idNum2!=None):
-            if(not findIfBlocked(rfid_idNum2[0])):
-                if(rfid_idNum2[1]==1):
-                    transactionRecord= [(str(rfid_uid2),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    raspiRFID.buzzSuccessful(buzzer2)
-                    #add to blocked list
-                    blockedAccounts.append([rfid_idNum2[0],time.time()])
-                    main_recent.config(text=rfid_idNum2[0],anchor="w")
-                else:
-                    raspiRFID.buzzNoBalance(buzzer2)
-                    pass
-            else:
-                print("Blocked for 60 sec")
-        else:
-                print('UID not in database')
-                # raspiRFID.buzzNotInDB(buzzer2)
+        # if(rfid_idNum2!=None):
+        #     if(not findIfBlocked(rfid_idNum2[0])):
+        #         if(rfid_idNum2[1]==1):
+        #             transactionRecord= [(str(rfid_uid2),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),str(temp_DRIVERID))]
+        #             raspiRFID.inputTransactiontoDB(transactionRecord)
+        #             raspiRFID.buzzSuccessful(buzzer2)
+        #             #add to blocked list
+        #             blockedAccounts.append([rfid_idNum2[0],time.time()])
+        #             main_recent.config(text=rfid_idNum2[0],anchor="w")
+        #         else:
+        #             raspiRFID.buzzNoBalance(buzzer2)
+        #             pass
+        #     else:
+        #         print("Blocked for 60 sec")
+        # else:
+        #         print('UID not in database')
+        #         # raspiRFID.buzzNotInDB(buzzer2)
 
     window.after(300, refresh)
 
@@ -224,41 +229,57 @@ def history_frame_open():
 
     conn = sqlite3.connect('shuttle1.db')
 
-    cursor = conn.execute("SELECT Driver_id, Date, Total_Amount from driverSummary")
-    histrecord = []
-    for row in cursor:
-        driverquery = {
-            'Driver_id':row[0],
-            'Date':row[1],
-            'Total_Amount':row[2]
-        }
-        histrecord.append(driverquery)
+    cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = %s" % (Driver_ID))
+    rowexists = cursor.fetchone()
+    if rowexists == None:
+        print("None")
+        history_date1.config(text="")
+        history_total_amount1.config(text="")
+        history_total_passenger1.config(text="")
 
-    while (1):
-        if len(histrecord)%3 != 0:
+        history_date2.config(text="")
+        history_total_amount2.config(text="")
+        history_total_passenger2.config(text="")
+
+        history_date3.config(text="")
+        history_total_amount3.config(text="")
+        history_total_passenger3.config(text="")
+    else:
+        cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = %s" % (Driver_ID))
+        histrecord = []
+        for row in cursor:
             driverquery = {
-                'Driver_id':' ',
-                'Date':' ',
-                'Total_Amount':0
+                'Date':row[0],
+                'Total_Amount':row[1]
             }
             histrecord.append(driverquery)
-            break
+
+        while (1):
+            if len(histrecord)%3 == 0:
+                break
+            else:
+                driverquery = {
+                    'Date':' ',
+                    'Total_Amount':0
+                }
+                histrecord.append(driverquery)
+                break
             
-    history_page = []
-    for x in range(int(len(histrecord)/3)):
-        history_page.append(histrecord[x*3:(x*3)+3])
+        history_page = []
+        for x in range(int(len(histrecord)/3)):
+            history_page.append(histrecord[x*3:(x*3)+3])
 
-    history_date1.config(text=history_page[history_page_counter][0]['Date'])
-    history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
-    history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
+        history_date1.config(text=history_page[history_page_counter][0]['Date'])
+        history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
+        history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
 
-    history_date2.config(text=history_page[history_page_counter][1]['Date'])
-    history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
-    history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
+        history_date2.config(text=history_page[history_page_counter][1]['Date'])
+        history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
+        history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
 
-    history_date3.config(text=history_page[history_page_counter][2]['Date'])
-    history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
-    history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
+        history_date3.config(text=history_page[history_page_counter][2]['Date'])
+        history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
+        history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
         
     conn.close()
 
