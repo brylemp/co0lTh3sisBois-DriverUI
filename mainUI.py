@@ -114,56 +114,13 @@ def refresh():
             grey_counter = grey_counter + 1
             grey_recent.config(text=rfid_idnum,anchor="w")
         
-        # call blocking accounts func
-        temporaryBlockFunc()
 
-        # RFID READER
-        rfid_uid, text = RFID_reader1.read_no_block()
-        print("RFID1 UID="+str(rfid_uid))
-        rfid_idNum=raspiRFID.checkUID(rfid_uid)
-        print("IDNUM="+str(rfid_idNum))
-        
-        if(rfid_idNum!=None):
-            if(not findIfBlocked(rfid_idNum[0])):
-                if(rfid_idNum[1]==1):
-                    transactionRecord= [(str(rfid_uid),str(datetime.datetime.now()),str(rfid_idNum[0]),int(shuttlePrice),Driver_ID[0])]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    raspiRFID.buzzSuccessful(buzzer1)
-                    #add to blocked list
-                    blockedAccounts.append([rfid_idNum[0],time.time()])
-                    main_recent.config(text=rfid_idNum[0],anchor="w")
-                else:
-                    raspiRFID.buzzNoBalance(buzzer1)
-                    pass
-            else:
-                print("Blocked for 60 sec")
-        else:
-            print('UID not in database')
-            #raspiRFID.buzzNotInDB(buzzer1)
-
-        #SECOND RFID READER
-        rfid_uid2, text2 = RFID_reader2.read_no_block()
-        print("RFID2 UID="+str(rfid_uid2))
-        rfid_idNum2=raspiRFID.checkUID(rfid_uid2)
-        print('IDNUM2='+str(rfid_idNum2))
-        
-        if(rfid_idNum2!=None):
-            if(not findIfBlocked(rfid_idNum2[0])):
-                if(rfid_idNum2[1]==1):
-                    transactionRecord= [(str(rfid_uid2),str(datetime.datetime.now()),str(rfid_idNum2[0]),int(shuttlePrice),Driver_ID[0])]
-                    raspiRFID.inputTransactiontoDB(transactionRecord)
-                    raspiRFID.buzzSuccessful(buzzer2)
-                    #add to blocked list
-                    blockedAccounts.append([rfid_idNum2[0],time.time()])
-                    main_recent.config(text=rfid_idNum2[0],anchor="w")
-                else:
-                    raspiRFID.buzzNoBalance(buzzer2)
-                    pass
-            else:
-                print("Blocked for 60 sec")
-        else:
-                print('UID not in database')
-                # raspiRFID.buzzNotInDB(buzzer2)
+        #Recent Passenger
+        conn = sqlite3.connect('./SHUTTLE/shuttle1.db')
+        cursor = conn.execute("SELECT uid from recentTransaction")
+        for row in cursor:
+            print(row)
+            main_recent.config(text=row[0],anchor="w")
 
     window.after(300, refresh)
 
