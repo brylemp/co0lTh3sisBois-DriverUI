@@ -94,29 +94,30 @@ def refresh():
         wifi_label.config(image=replace)
         wifi_label.image=replace
 
-        # readerr = SimpleMFRC522()
-        # uidd = readerr.read_no_block()
-        # print(uidd)
+        readerr = SimpleMFRC522()
+        uidd = readerr.read_no_block()
+        print(uidd)
 
-        #GREY RFID
-        rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-        global grey_counter
-        print(rfid_idnum)
+        # #GREY RFID
+        # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
+        # global grey_counter
+        # print(rfid_idnum)
         
-        if(rfid_idnum!=None and grey_flag==1):
-            grey_counter = 0
+        # if(rfid_idnum!=None and grey_flag==1):
+        #     grey_counter = 0
         
-        if(grey_counter==40 and grey_flag==1):
-            print(grey_counter)
-            grey_counter = 0
-            grey_recent.config(text="",anchor="w")
-        elif(grey_counter<40 and grey_flag==1):
-            grey_counter = grey_counter + 1
-            grey_recent.config(text=rfid_idnum,anchor="w")
+        # if(grey_counter==40 and grey_flag==1):
+        #     print(grey_counter)
+        #     grey_counter = 0
+        #     grey_recent.config(text="",anchor="w")
+        # elif(grey_counter<40 and grey_flag==1):
+        #     grey_counter = grey_counter + 1
+        #     grey_recent.config(text=rfid_idnum,anchor="w")
         
 
         #Recent Passenger
-        conn = sqlite3.connect('./SHUTTLE/shuttle1.db')
+        # conn = sqlite3.connect('./SHUTTLE/shuttle1.db')
+        conn = sqlite3.connect('shuttle1.db')
         cursor = conn.execute("SELECT uid from recentTransaction")
         for row in cursor:
             print(row)
