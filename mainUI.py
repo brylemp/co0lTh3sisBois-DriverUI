@@ -5,8 +5,6 @@ import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 import time
 import datetime
-import raspiRFID
-import raspiRFID2
 import threading
 import sqlite3
 
@@ -17,25 +15,18 @@ history_page = []
 showhide_flag = 0
 grey_counter = 0
 grey_flag = 0
+grey_old = sqlite3.connect('../shuttle/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
+
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = ("",)
 Driver_ID = ("",)
-
-#initialization for RFID readers
 shuttlePrice='5'
-RFID_reader1 = SimpleMFRC522()
-RFID_reader2 = raspiRFID2.SimpleMFRC522a()
-buzzer1=31
-buzzer2=37
-# GPIO.setup(buzzer1,GPIO.OUT)
-# GPIO.setup(buzzer2,GPIO.OUT)
 
+
+GPIO.setmode(GPIO.BOARD) 
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD) 
-GPIO.setup(buzzer1,GPIO.OUT)
-GPIO.setup(buzzer2,GPIO.OUT)
 blockedAccounts=[]
 timeWindow=60
 
@@ -63,7 +54,7 @@ def refresh():
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
-        conn = sqlite3.connect('shuttle1.db')
+        conn = sqlite3.connect('../shuttle/shuttle1.db')
         cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
         for row in cursor:
             print(row)
@@ -94,52 +85,61 @@ def refresh():
         wifi_label.config(image=replace)
         wifi_label.image=replace
 
-        readerr = SimpleMFRC522()
-        uidd = readerr.read_no_block()
-        print(uidd)
+        #GREY RFID
+        global grey_flag
+        global grey_counter
+        global grey_old
 
-        # #GREY RFID
-        # rfid_uid,rfid_idnum = RFID_reader1.read_no_block()
-        # global grey_counter
-        # print(rfid_idnum)
+        if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
+            main_frame.pack_forget()
+            hist_frame.pack_forget()
+            grey_frame.pack(expand=1,fill=BOTH)
+            conn = sqlite3.connect('../shuttle/shuttle1.db')
+            cursor = conn.execute("SELECT uid from recentTransaction")
+            new = cursor.fetchone()[0]
+            if grey_old == new:
+                if grey_flag == 1:
+                    print(grey_counter)
+                    grey_recent.config(text=new,anchor="w")
+                    if grey_counter == 16:
+                        grey_recent.config(text="",anchor="w")
+                        grey_counter = 0
+                        grey_flag = 0
+                    else:
+                        grey_counter = grey_counter + 1
+                else:
+                    grey_recent.config(text="",anchor="w")
+            else:
+                grey_flag = 1
+                grey_counter = 0
+                grey_old = new
+        else:
+            grey_frame.pack_forget()
+            main_frame.pack(expand=1,fill=BOTH)
         
-        # if(rfid_idnum!=None and grey_flag==1):
-        #     grey_counter = 0
-        
-        # if(grey_counter==40 and grey_flag==1):
-        #     print(grey_counter)
-        #     grey_counter = 0
-        #     grey_recent.config(text="",anchor="w")
-        # elif(grey_counter<40 and grey_flag==1):
-        #     grey_counter = grey_counter + 1
-        #     grey_recent.config(text=rfid_idnum,anchor="w")
-        
-
         #Recent Passenger
-        # conn = sqlite3.connect('./SHUTTLE/shuttle1.db')
-        conn = sqlite3.connect('shuttle1.db')
+        conn = sqlite3.connect('../shuttle/shuttle1.db')
         cursor = conn.execute("SELECT uid from recentTransaction")
         for row in cursor:
-            print(row)
+            # print(row)
             main_recent.config(text=row[0],anchor="w")
 
     window.after(300, refresh)
+    
+# def grey_toggle(channel):
+#     global grey_flag
+#     if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
+#         grey_flag = 1
+#         main_frame.pack_forget()
+#         hist_frame.pack_forget()
+#         grey_frame.pack(expand=1,fill=BOTH)
+#         #grey_recent.config(text="")
+#     else:
+#         grey_flag = 0   
+#         grey_frame.pack_forget()
+#         main_frame.pack(expand=1,fill=BOTH)
 
-def grey_toggle(channel):
-    global grey_flag
-    if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
-        grey_flag = 1
-        main_frame.pack_forget()
-        hist_frame.pack_forget()
-        grey_frame.pack(expand=1,fill=BOTH)
-        #grey_recent.config(text="")
-    else:
-        grey_flag = 0   
-        grey_frame.pack_forget()
-        main_frame.pack(expand=1,fill=BOTH)
-
-GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
-
+# GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
 
 def sync():
     print("Sync!")
@@ -338,7 +338,7 @@ history_total_passenger3 = Label(hist_frame, width="10", height="1", bd=0, bg="#
 history_total_passenger3.place(x=685,y=321)
 
 ####### GREYED OUT UI BG through Pillow PIL ########
-grey_bg = Canvas(grey_frame, bg="#0e0e0e", height=480, width=848) 
+grey_bg = Canvas(grey_frame, bg="#e3e3e3", height=480, width=848) 
 grey_bg.pack()
 
 grey_recent = Label(grey_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="")
