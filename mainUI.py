@@ -21,33 +21,9 @@ Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = ("",)
 Driver_ID = ("",)
-shuttlePrice='5'
 
-
-GPIO.setmode(GPIO.BOARD) 
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
-blockedAccounts=[]
-timeWindow=60
-
-def temporaryBlockFunc():
-    global blockedAccounts
-    toRemove=[]
-    for accounts in blockedAccounts:
-            print(accounts)
-            print(time.time()-accounts[1])
-            if(time.time()-accounts[1]>timeWindow):
-                    toRemove.append(accounts)
-                    print(toRemove)
-    for x in toRemove:
-            print("Remove="+str(x))
-            blockedAccounts.remove(x)
-
-def findIfBlocked(compare):
-    for accounts in blockedAccounts:
-            if(accounts[0]==compare):
-                return 1
-    return 0
         
 def refresh():
     global login
@@ -125,21 +101,6 @@ def refresh():
             main_recent.config(text=row[0],anchor="w")
 
     window.after(300, refresh)
-    
-# def grey_toggle(channel):
-#     global grey_flag
-#     if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
-#         grey_flag = 1
-#         main_frame.pack_forget()
-#         hist_frame.pack_forget()
-#         grey_frame.pack(expand=1,fill=BOTH)
-#         #grey_recent.config(text="")
-#     else:
-#         grey_flag = 0   
-#         grey_frame.pack_forget()
-#         main_frame.pack(expand=1,fill=BOTH)
-
-# GPIO.add_event_detect(handbrake_sensor,GPIO.RISING,callback=grey_toggle)
 
 def sync():
     print("Sync!")
