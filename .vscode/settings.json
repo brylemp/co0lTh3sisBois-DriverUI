@@ -1,4 +1,11 @@
 {
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "sqltools.connections": [
+        {
+            "database": "${workspaceFolder}/shuttle1.db",
+            "dialect": "SQLite",
+            "name": "conn"
+        }
+    ]
 }
