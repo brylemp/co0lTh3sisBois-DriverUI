@@ -1,18 +1,17 @@
+import RPi.GPIO as GPIO
 from tkinter import *
 from PIL import ImageTk, Image
-import os,re
-import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
-import time
-import datetime
-import threading
-import sqlite3
+import os,re, sqlite3
 
 login = 0
 handbrake_sensor = 29
+
 history_page_counter = 0
 history_page = []
+
 showhide_flag = 0
+
 grey_counter = 0
 grey_flag = 0
 grey_old = sqlite3.connect('../shuttle/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
