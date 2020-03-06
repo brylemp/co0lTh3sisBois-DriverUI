@@ -14,13 +14,13 @@ showhide_flag = 0
 
 grey_counter = 0
 grey_flag = 0
-grey_old = sqlite3.connect('../shuttle/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
+grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
 
 Total_Fare = 1500
 Total_Passenger = 300
 Driver_Name = ("",)
 Driver_ID = ("",)
-
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
         
@@ -29,19 +29,24 @@ def refresh():
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
-        conn = sqlite3.connect('../shuttle/shuttle1.db')
-        cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
-        for row in cursor:
-            print(row)
-            if str(UID) == row[0]:
-                global Driver_ID, Driver_Name
-                Driver_ID = (row[1],)
-                Driver_Name = (row[2],)
-                print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
-                main_drivername.config(text=Driver_Name[0])
-                login_frame.pack_forget()
-                main_frame.pack(expand=1,fill=BOTH)
-                login = 1
+        # conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
+        # cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
+        # for row in cursor:
+            # print(row)
+            # if str(UID) == row[0]:
+                # global Driver_ID, Driver_Name
+                # Driver_ID = (row[1],)
+                # Driver_Name = (row[2],)
+                # print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                # main_drivername.config(text=Driver_Name[0])
+                # login_frame.pack_forget()
+                # main_frame.pack(expand=1,fill=BOTH)
+                # login = 1
+        if(UID!=None):
+            main_drivername.config(text=Driver_Name[0])
+            login_frame.pack_forget()
+            main_frame.pack(expand=1,fill=BOTH)
+            login = 1
     else:
         # WIFI CHECK
         wat = os.popen('iwgetid').read() ### RASPI ###
@@ -69,7 +74,7 @@ def refresh():
             main_frame.pack_forget()
             hist_frame.pack_forget()
             grey_frame.pack(expand=1,fill=BOTH)
-            conn = sqlite3.connect('../shuttle/shuttle1.db')
+            conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
             cursor = conn.execute("SELECT uid from recentTransaction")
             new = cursor.fetchone()[0]
             if grey_old == new:
@@ -93,7 +98,7 @@ def refresh():
             main_frame.pack(expand=1,fill=BOTH)
         
         #Recent Passenger
-        conn = sqlite3.connect('../shuttle/shuttle1.db')
+        conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT uid from recentTransaction")
         for row in cursor:
             # print(row)
@@ -207,7 +212,7 @@ def history_frame_open():
 ##### WINDOW #####
 window = Tk()
 window.geometry("848x480") #Size for Window
-# window.overrideredirect(1) #Remove window border
+window.overrideredirect(1) #Remove window border
 window.resizable(False,False) #Prevent resize windows
 
 ##### FRAMES ######
