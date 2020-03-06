@@ -29,19 +29,19 @@ def refresh():
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
-        # conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-        # cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
-        # for row in cursor:
-            # print(row)
-            # if str(UID) == row[0]:
-                # global Driver_ID, Driver_Name
-                # Driver_ID = (row[1],)
-                # Driver_Name = (row[2],)
-                # print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
-                # main_drivername.config(text=Driver_Name[0])
-                # login_frame.pack_forget()
-                # main_frame.pack(expand=1,fill=BOTH)
-                # login = 1
+        conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
+        cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
+        for row in cursor:
+            print(row)
+            if str(UID) == row[0]:
+                global Driver_ID, Driver_Name
+                Driver_ID = (row[1],)
+                Driver_Name = (row[2],)
+                print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                main_drivername.config(text=Driver_Name[0])
+                login_frame.pack_forget()
+                main_frame.pack(expand=1,fill=BOTH)
+                login = 1
         if(UID!=None):
             main_drivername.config(text=Driver_Name[0])
             login_frame.pack_forget()
@@ -73,22 +73,26 @@ def refresh():
         if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
             main_frame.pack_forget()
             hist_frame.pack_forget()
-            grey_frame.pack(expand=1,fill=BOTH)
+            # grey_frame.pack(expand=1,fill=BOTH)
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
             cursor = conn.execute("SELECT uid from recentTransaction")
             new = cursor.fetchone()[0]
             if grey_old == new:
                 if grey_flag == 1:
-                    print(grey_counter)
+                    # print(grey_counter)
+                    grey_frame.pack(expand=1,fill=BOTH)
                     grey_recent.config(text=new,anchor="w")
                     if grey_counter == 16:
                         grey_recent.config(text="",anchor="w")
+                        grey_frame.pack_forget()
                         grey_counter = 0
                         grey_flag = 0
                     else:
                         grey_counter = grey_counter + 1
                 else:
                     grey_recent.config(text="",anchor="w")
+                    grey_frame.pack_forget()
+                    
             else:
                 grey_flag = 1
                 grey_counter = 0
@@ -100,9 +104,8 @@ def refresh():
         #Recent Passenger
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT uid from recentTransaction")
-        for row in cursor:
-            # print(row)
-            main_recent.config(text=row[0],anchor="w")
+        recent = cursor.fetchone()[0]
+        main_recent.config(text=recent,anchor="w")
 
     window.after(300, refresh)
 
@@ -153,7 +156,7 @@ def history_frame_open():
     main_frame.pack_forget()
     hist_frame.pack(expand=1,fill=BOTH)
 
-    conn = sqlite3.connect('shuttle1.db')
+    conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
 
     cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = ?", Driver_ID)
     rowexists = cursor.fetchone()
@@ -253,7 +256,7 @@ main_totalpass.place(x=70,y=282)
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15))
 main_drivername.place(x=10,y=445) 
 
-main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="13174803")
+main_recent = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32))
 main_recent.place(x=543,y=58) 
 
 main_tap_status = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",24), text="Success!")
@@ -268,7 +271,6 @@ wifi_label.place(x=10,y=10)
 
 ####### HISTORY UI BG through Pillow PIL ########
 hist_bg = Canvas(hist_frame, bg="#e3e3e3", height=480, width=848) 
-# hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_bg.png")) # BG through Pillow PIL
 hist_bg_image = ImageTk.PhotoImage(Image.open("Images/history_emptybg.png")) # BG through Pillow PIL
 hist_label = Label(hist_frame, image=hist_bg_image) 
 hist_label.place(x=0, y=0, relwidth=1, relheight=1) 
@@ -303,11 +305,14 @@ history_total_passenger3 = Label(hist_frame, width="10", height="1", bd=0, bg="#
 history_total_passenger3.place(x=685,y=321)
 
 ####### GREYED OUT UI BG through Pillow PIL ########
-grey_bg = Canvas(grey_frame, bg="#e3e3e3", height=480, width=848) 
+grey_bg = Canvas(grey_frame, bg="#121212", height=480, width=848)
+grey_bg_image = ImageTk.PhotoImage(Image.open("Images/hbbg.png")) # BG through Pillow PIL
+grey_label = Label(grey_frame, image=grey_bg_image) 
+grey_label.place(x=0, y=0, relwidth=1, relheight=1) 
 grey_bg.pack()
 
 grey_recent = Label(grey_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="")
-grey_recent.place(x=540,y=58) 
+grey_recent.place(x=520,y=158) 
 
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
