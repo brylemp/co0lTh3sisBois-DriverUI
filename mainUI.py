@@ -23,14 +23,33 @@ Driver_ID = ("",)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
+
+def updateDriverStatus(driverIDNum):
+    try:
+        conn=sqlite3.connect('shuttle1.db')
+        cursor=conn.cursor()
+
+        sql_update_query = """UPDATE driverStatus set id = '1', driverStatus='1',driverID=? where id ='1'"""
         
+        cursor.execute(sql_update_query,(driverIDNum,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except sqlite3.Error as error:
+        print("Error encountered in updating recent transaction sqlite",error)
+        input("Press Enter to continue...")
+    finally:
+        if (conn):
+            conn.close()
+            # print("The SQLite connection is closed")
+
 def refresh():
     global login
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-        cursor = conn.execute("SELECT Uid, Driver_id, Driver_name from driverAccounts")
+        cursor = conn.execute("SELECT uid, Driver_ID, Driver_Name from driverAccounts where uid=?",(UID, ))
         for row in cursor:
             print(row)
             if str(UID) == row[0]:
@@ -38,15 +57,22 @@ def refresh():
                 Driver_ID = (row[1],)
                 Driver_Name = (row[2],)
                 print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                #update driver driverStatus=1, driverID
+                updateDriverStatus(Driver_ID)
+
                 main_drivername.config(text=Driver_Name[0])
                 login_frame.pack_forget()
                 main_frame.pack(expand=1,fill=BOTH)
                 login = 1
-        if(UID!=None):
-            main_drivername.config(text=Driver_Name[0])
-            login_frame.pack_forget()
-            main_frame.pack(expand=1,fill=BOTH)
-            login = 1
+                break
+                
+        conn.close()
+
+        # if(UID!=None):
+        #     main_drivername.config(text=Driver_Name[0])
+        #     login_frame.pack_forget()
+        #     main_frame.pack(expand=1,fill=BOTH)
+        #     login = 1
     else:
         # WIFI CHECK
         wat = os.popen('iwgetid').read() ### RASPI ###
