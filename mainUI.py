@@ -26,7 +26,7 @@ GPIO.setwarnings(False)
 
 def updateDriverStatus(driverIDNum):
     try:
-        conn=sqlite3.connect('shuttle1.db')
+        conn=sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor=conn.cursor()
 
         sql_update_query = """UPDATE driverStatus set id = '1', driverStatus='1',driverID=? where id ='1'"""
