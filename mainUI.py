@@ -50,23 +50,24 @@ def refresh():
         UID,IDNUM = login_reader.read_no_block()
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT uid, Driver_ID, Driver_Name from driverAccounts where uid=?",(UID, ))
-        for row in cursor:
-            print(row)
-            if str(UID) == row[0]:
-                global Driver_ID, Driver_Name
-                Driver_ID = (row[1],)
-                Driver_Name = (row[2],)
-                print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
-                #update driver driverStatus=1, driverID
-                updateDriverStatus(Driver_ID)
+        if cursor!=None:
+            for row in cursor:
+                print(row)
+                if str(UID) == row[0]:
+                    global Driver_ID, Driver_Name
+                    Driver_ID = (row[1],)
+                    Driver_Name = (row[2],)
+                    print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                    #update driver driverStatus=1, driverID
+                    updateDriverStatus(Driver_ID)
 
-                main_drivername.config(text=Driver_Name[0])
-                login_frame.pack_forget()
-                main_frame.pack(expand=1,fill=BOTH)
-                login = 1
-                break
-                
-        conn.close()
+                    main_drivername.config(text=Driver_Name[0])
+                    login_frame.pack_forget()
+                    main_frame.pack(expand=1,fill=BOTH)
+                    login = 1
+                    break
+                    
+            conn.close()
 
         # if(UID!=None):
         #     main_drivername.config(text=Driver_Name[0])
