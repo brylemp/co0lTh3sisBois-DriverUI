@@ -49,7 +49,7 @@ def refresh():
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-        cursor = conn.execute("SELECT uid, Driver_ID, Driver_Name from driverAccounts where uid=?",(UID, ))
+        cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
         if cursor!=None:
             for row in cursor:
                 print(row)
