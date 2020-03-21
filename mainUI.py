@@ -27,12 +27,7 @@ GPIO.setwarnings(False)
 def updateDriverStatus(driverIDNum):
     try:
         conn=sqlite3.connect('../SHUTTLE/shuttle1.db')
-        cursor=conn.cursor()
-
-        sql_update_query = """UPDATE driverStatus set id = '1', driverStatus='1',driverID=? where id ='1'"""
-        
-        cursor.execute(sql_update_query,(driverIDNum,))
-        conn.commit()
+        cursor=conn.execute("UPDATE driverStatus SET Driverstatus='1',Driverid=? where Id ='1'",driverIDNum)
         cursor.close()
         conn.close()
     except sqlite3.Error as error:
@@ -68,12 +63,6 @@ def refresh():
                     break
                     
             conn.close()
-
-        # if(UID!=None):
-        #     main_drivername.config(text=Driver_Name[0])
-        #     login_frame.pack_forget()
-        #     main_frame.pack(expand=1,fill=BOTH)
-        #     login = 1
     else:
         # WIFI CHECK
         wat = os.popen('iwgetid').read() ### RASPI ###
