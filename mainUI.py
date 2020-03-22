@@ -3,6 +3,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
+import datetime
 
 login = 0
 handbrake_sensor = 29
@@ -16,8 +17,6 @@ grey_counter = 0
 grey_flag = 0
 grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
 
-Total_Fare = 1500
-Total_Passenger = 300
 Driver_Name = ("",)
 Driver_ID = ("",)
 GPIO.setmode(GPIO.BOARD)
@@ -84,7 +83,16 @@ def refresh():
             
         wifi_label.config(image=replace)
         wifi_label.image=replace
-
+        
+        #TOTAL PASSENGER/TOTAL FARE
+        conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
+        cursor = conn.execute("SELECT Total_Amount FROM driverSummary WHERE Driver_ID = ? AND Date= ? LIMIT 1", (Driver_ID[0],datetime.datetime.now().strftime("%Y-%m-%d")))
+        TTF = cursor.fetchone()[0]
+        TTP = TTF/5
+        TTF = "₱"+str(TTF)
+        main_totalfare.config(text=TTF,anchor="center")
+        main_totalpass.config(text=TTP,anchor="center")
+        
         #GREY RFID
         global grey_flag
         global grey_counter
@@ -268,11 +276,10 @@ main_label.place(x=0, y=0, relwidth=1, relheight=1)
 main_bg.pack()
 
 ###### MAIN UI LABELS ###########
-TTF = "₱"+str(Total_Fare)
-main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=TTF)
+main_totalfare = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=" ")
 main_totalfare.place(x=70,y=32)
 
-main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=Total_Passenger)
+main_totalpass = Label(main_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55), text=" ")
 main_totalpass.place(x=70,y=282)
 
 main_drivername = Label(main_frame, anchor="sw", width="25", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",15))
