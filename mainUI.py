@@ -43,6 +43,7 @@ def refresh():
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
+        UID=UID>>0x10                                           #removed last 16 bits/2 bytes of the uid read by the mfrc522
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
         if cursor!=None:
