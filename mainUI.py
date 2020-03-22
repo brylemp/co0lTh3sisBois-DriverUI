@@ -43,27 +43,28 @@ def refresh():
     if login == 0:
         login_reader = SimpleMFRC522()
         UID,IDNUM = login_reader.read_no_block()
-        UID=UID>>0x10                                           #removed last 16 bits/2 bytes of the uid read by the mfrc522
-        conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-        cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
-        if cursor!=None:
-            for row in cursor:
-                print(row)
-                if str(UID) == row[0]:
-                    global Driver_ID, Driver_Name
-                    Driver_ID = (row[1],)
-                    Driver_Name = (row[2],)
-                    print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
-                    #update driver driverStatus=1, driverID
-                    updateDriverStatus(Driver_ID)
+        if UID!=None:
+            UID=UID>>0x10                                           #removed last 16 bits/2 bytes of the uid read by the mfrc522
+            conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
+            cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
+            if cursor!=None:
+                for row in cursor:
+                    print(row)
+                    if str(UID) == row[0]:
+                        global Driver_ID, Driver_Name
+                        Driver_ID = (row[1],)
+                        Driver_Name = (row[2],)
+                        print("DRIVER FOUND: %s - %s" % (Driver_Name,Driver_ID))
+                        #update driver driverStatus=1, driverID
+                        updateDriverStatus(Driver_ID)
 
-                    main_drivername.config(text=Driver_Name[0])
-                    login_frame.pack_forget()
-                    main_frame.pack(expand=1,fill=BOTH)
-                    login = 1
-                    break
-                    
-            conn.close()
+                        main_drivername.config(text=Driver_Name[0])
+                        login_frame.pack_forget()
+                        main_frame.pack(expand=1,fill=BOTH)
+                        login = 1
+                        break
+                        
+                conn.close()
     else:
         # WIFI CHECK
         wat = os.popen('iwgetid').read() ### RASPI ###
