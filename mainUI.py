@@ -28,6 +28,8 @@ def updateDriverStatus(driverIDNum):
     try:
         conn=sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor=conn.execute("UPDATE driverStatus SET Driverstatus='1',Driverid=? where Id ='1'",driverIDNum)
+        cursor=conn.cursor()
+        conn.commit()
         cursor.close()
         conn.close()
     except sqlite3.Error as error:
@@ -95,7 +97,9 @@ def refresh():
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
             cursor = conn.execute("SELECT uid from recentTransaction")
             new = cursor.fetchone()[0]
+            print(grey_old,new)
             if grey_old == new:
+                
                 if grey_flag == 1:
                     # print(grey_counter)
                     grey_frame.pack(expand=1,fill=BOTH)
