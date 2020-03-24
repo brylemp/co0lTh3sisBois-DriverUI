@@ -87,15 +87,20 @@ def refresh():
         #TOTAL PASSENGER/TOTAL FARE
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT Total_Amount FROM driverSummary WHERE Driver_ID = ? AND Date= ? LIMIT 1", (Driver_ID[0],datetime.datetime.now().strftime("%Y-%m-%d")))
-        try:
-            TTF = cursor.fetchone()[0]
-            TTP = int(TTF/5)
-            TTF = "₱"+str(TTF)
-            main_totalfare.config(text=TTF,anchor="center")
-            main_totalpass.config(text=TTP,anchor="center")
-        except TypeError:
-            main_totalfare.config(text="₱0",anchor="center")
-            main_totalpass.config(text="0",anchor="center")
+        
+        if(showhide_flag==1):
+            main_totalfare.config(text="Hidden")
+            main_totalpass.config(text="Hidden")
+        else:
+            try:
+                TTF = cursor.fetchone()[0]
+                TTP = int(TTF/5)
+                TTF = "₱"+str(TTF)
+                main_totalfare.config(text=TTF,anchor="center")
+                main_totalpass.config(text=TTP,anchor="center")
+            except TypeError:
+                main_totalfare.config(text="₱0",anchor="center")
+                main_totalpass.config(text="0",anchor="center")
         
         
         #GREY RFID
@@ -147,18 +152,13 @@ def refresh():
 def sync():
     print("Sync!")
 
-def showhide(main_totalfare,main_totalpass):
+def showhide():
     global showhide_flag
     if showhide_flag == 0:
         print("Hidden!")
-        main_totalfare.config(text="Hidden")
-        main_totalpass.config(text="Hidden")
         showhide_flag = 1
     elif showhide_flag == 1:
         print("Shown!")
-        TTF = "₱"+str(Total_Fare)
-        main_totalfare.config(text=TTF)
-        main_totalpass.config(text=Total_Passenger)
         showhide_flag = 0
 
 def pageturn(nextt):
@@ -209,7 +209,7 @@ def history_frame_open():
         history_total_amount3.config(text="")
         history_total_passenger3.config(text="")
     else:
-        cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = %s" % (Driver_ID))
+        cursor = conn.execute("SELECT Date, Total_Amount from driverSummary where Driver_id = ?", Driver_ID)
         histrecord = []
         for row in cursor:
             driverquery = {
@@ -217,7 +217,6 @@ def history_frame_open():
                 'Total_Amount':row[1]
             }
             histrecord.append(driverquery)
-
         while (1):
             if len(histrecord)%3 == 0:
                 break
@@ -227,12 +226,12 @@ def history_frame_open():
                     'Total_Amount':0
                 }
                 histrecord.append(driverquery)
-                break
             
         history_page = []
-        for x in range(int(len(histrecord)/3)):
+        for x in range(7):
             history_page.append(histrecord[x*3:(x*3)+3])
-
+        print(len(histrecord))
+        print(int(len(histrecord)/3))
         history_date1.config(text=history_page[history_page_counter][0]['Date'])
         history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
         history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
@@ -360,7 +359,7 @@ syB = Button (main_frame, image=sy_image, width=182, height=74, highlightthickne
 syB.place(bordermode=OUTSIDE,x=448,y=278)
 
 #### SHOW/HIDE ####
-showhideB = Button (main_frame, image=showhide_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: showhide(main_totalfare,main_totalpass))
+showhideB = Button (main_frame, image=showhide_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: showhide())
 showhideB.place(bordermode=OUTSIDE,x=640,y=278)
 
 #### HISTORY ####
