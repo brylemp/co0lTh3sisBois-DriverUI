@@ -106,14 +106,14 @@ def refresh():
         #SYNC STATUS
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT * FROM transactions LIMIT 1")
-        transactionStatus=cursor.cursor.fetchone()[0]
+        transactionStatus=cursor.fetchone()[0]
         if transactionStatus!=None:
             #Not synced, show last synched
             #find last synced status
             cursor = conn.execute("SELECT Date_Time FROM syncStatus WHERE id=1 LIMIT 1")
-            lastSynced=cursor.cursor.fetchone()[0]
+            lastSynced=cursor.fetchone()[0]
             if lastSynced!=None:
-                main_sync_status.config(text="Last Synced: "+lastSynced,anchor="center")
+                main_sync_status.config(text="Last Synced\n "+lastSynced,anchor="center")
             else:
                 main_sync_status.config(text="Last Synced: N/A",anchor="center")
         else:
@@ -314,8 +314,8 @@ main_recent.place(x=543,y=58)
 main_tap_status = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",24), text="Success!")
 main_tap_status.place(x=570,y=110) 
 
-main_sync_status = Label(main_frame, anchor="center", height="2", width="15", bd=0, bg="#e3e3e3", fg="#a90011", font=("ArialUnicodeMS",24), text="Last Synced\n03/23/20 12:02")
-main_sync_status.place(x=509,y=160) 
+main_sync_status = Label(main_frame, anchor="center", height="2", width="17", bd=0, bg="#e3e3e3", fg="#a90011", font=("ArialUnicodeMS",24))
+main_sync_status.place(x=487,y=160) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
