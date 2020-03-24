@@ -228,10 +228,8 @@ def history_frame_open():
                 histrecord.append(driverquery)
             
         history_page = []
-        for x in range(7):
+        for x in range(int(len(histrecord)/3)):
             history_page.append(histrecord[x*3:(x*3)+3])
-        print(len(histrecord))
-        print(int(len(histrecord)/3))
         history_date1.config(text=history_page[history_page_counter][0]['Date'])
         history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
         history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
