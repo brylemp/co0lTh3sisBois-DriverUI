@@ -87,11 +87,16 @@ def refresh():
         #TOTAL PASSENGER/TOTAL FARE
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT Total_Amount FROM driverSummary WHERE Driver_ID = ? AND Date= ? LIMIT 1", (Driver_ID[0],datetime.datetime.now().strftime("%Y-%m-%d")))
-        TTF = cursor.fetchone()[0]
-        TTP = TTF/5
-        TTF = "₱"+str(TTF)
-        main_totalfare.config(text=TTF,anchor="center")
-        main_totalpass.config(text=TTP,anchor="center")
+        try:
+            TTF = cursor.fetchone()[0]
+            TTP = int(TTF/5)
+            TTF = "₱"+str(TTF)
+            main_totalfare.config(text=TTF,anchor="center")
+            main_totalpass.config(text=TTP,anchor="center")
+        except TypeError:
+            main_totalfare.config(text="₱0",anchor="center")
+            main_totalpass.config(text="0",anchor="center")
+        
         
         #GREY RFID
         global grey_flag
