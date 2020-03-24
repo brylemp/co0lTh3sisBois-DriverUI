@@ -96,6 +96,25 @@ def refresh():
         except TypeError:
             main_totalfare.config(text="₱0",anchor="center")
             main_totalpass.config(text="0",anchor="center")
+        conn.close()
+        
+        #SYNC STATUS
+        conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
+        cursor = conn.execute("SELECT * FROM transactions LIMIT 1")
+        transactionStatus=cursor.cursor.fetchone()[0]
+        if transactionStatus!=None:
+            #Not synced, show last synched
+            #find last synced status
+            cursor = conn.execute("SELECT Date_Time FROM syncStatus WHERE id=1 LIMIT 1")
+            lastSynced=cursor.cursor.fetchone()[0]
+            if lastSynced!=None:
+                main_sync_status.config(text="Last Synced: "+lastSynced,anchor="center")
+            else:
+                main_sync_status.config(text="Last Synced: N/A",anchor="center")
+        else:
+            #synced, show synced
+            main_sync_status.config(text="Synchronized",anchor="center")
+        conn.close()
         
         
         #GREY RFID
@@ -135,13 +154,14 @@ def refresh():
         else:
             grey_frame.pack_forget()
             main_frame.pack(expand=1,fill=BOTH)
-        
+        conn.close()
+
         #Recent Passenger
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT uid from recentTransaction")
         recent = cursor.fetchone()[0]
         main_recent.config(text=recent,anchor="w")
-
+        conn.close()
     window.after(300, refresh)
 
 def sync():
