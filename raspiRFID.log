@@ -1,0 +1,50 @@
+2020-03-30 22:47:24,147: ERROR: __main__: Error encountered in setDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 204, in setDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:47:24,152: ERROR: __main__: Error encountered in readDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 220, in readDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:47:47,657: ERROR: __main__: Error encountered in setDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 204, in setDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:47:47,661: ERROR: __main__: Error encountered in readDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 220, in readDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:48:42,483: ERROR: __main__: Error encountered in setDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 204, in setDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:48:42,489: ERROR: __main__: Error encountered in readDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 220, in readDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:48:50,082: ERROR: __main__: Error encountered in setDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 204, in setDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:48:50,089: ERROR: __main__: Error encountered in readDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 220, in readDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:49:02,129: ERROR: __main__: Error encountered in setDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 204, in setDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus
+2020-03-30 22:49:02,137: ERROR: __main__: Error encountered in readDriverStatus
+Traceback (most recent call last):
+  File "raspiRFID.py", line 220, in readDriverStatus
+    cursor.execute(sql_update_query)
+sqlite3.OperationalError: no such table: driverStatus

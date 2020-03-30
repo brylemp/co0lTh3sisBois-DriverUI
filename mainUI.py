@@ -5,6 +5,8 @@ from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
 import datetime
 
+os.chdir('/home/pi/Desktop/driverui')
+
 login = 0
 handbrake_sensor = 29
 
