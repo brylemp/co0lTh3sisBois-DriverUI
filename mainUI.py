@@ -5,6 +5,8 @@ from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
 import datetime
 
+os.chdir('/home/pi/Desktop/driverui')
+
 login = 0
 handbrake_sensor = 29
 
@@ -19,6 +21,8 @@ grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from re
 
 Driver_Name = ("",)
 Driver_ID = ("",)
+TTP = ""
+TTF = ""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
@@ -85,6 +89,8 @@ def refresh():
         wifi_label.image=replace
         
         #TOTAL PASSENGER/TOTAL FARE
+        global TTF
+        global TTP
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT Total_Amount FROM driverSummary WHERE Driver_ID = ? AND Date= ? LIMIT 1", (Driver_ID[0],datetime.datetime.now().strftime("%Y-%m-%d")))
         
@@ -106,14 +112,14 @@ def refresh():
         #SYNC STATUS
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT * FROM transactions LIMIT 1")
-        transactionStatus=cursor.cursor.fetchone()[0]
+        transactionStatus=cursor.fetchone()[0]
         if transactionStatus!=None:
             #Not synced, show last synched
             #find last synced status
             cursor = conn.execute("SELECT Date_Time FROM syncStatus WHERE id=1 LIMIT 1")
-            lastSynced=cursor.cursor.fetchone()[0]
+            lastSynced=cursor.fetchone()[0]
             if lastSynced!=None:
-                main_sync_status.config(text="Last Synced: "+lastSynced,anchor="center")
+                main_sync_status.config(text="Last Synced\n "+lastSynced,anchor="center")
             else:
                 main_sync_status.config(text="Last Synced: N/A",anchor="center")
         else:
@@ -121,8 +127,6 @@ def refresh():
             main_sync_status.config(text="Synchronized",anchor="center")
         conn.close()
 
-        
-        
         #GREY RFID
         global grey_flag
         global grey_counter
@@ -142,6 +146,8 @@ def refresh():
                     # print(grey_counter)
                     grey_frame.pack(expand=1,fill=BOTH)
                     grey_recent.config(text=new,anchor="w")
+                    grey_fare.config(text=TTF,anchor="center")
+                    grey_pass.config(text=TTP,anchor="center")
                     if grey_counter == 16:
                         grey_recent.config(text="",anchor="w")
                         grey_frame.pack_forget()
@@ -270,6 +276,7 @@ window = Tk()
 window.geometry("848x480") #Size for Window
 window.overrideredirect(1) #Remove window border
 window.resizable(False,False) #Prevent resize windows
+window.config(bg="#4f4f4f")
 
 ##### FRAMES ######
 login_frame = Frame(window)
@@ -314,8 +321,8 @@ main_recent.place(x=543,y=58)
 main_tap_status = Label(main_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",24), text="Success!")
 main_tap_status.place(x=570,y=110) 
 
-main_sync_status = Label(main_frame, anchor="center", height="2", width="15", bd=0, bg="#e3e3e3", fg="#a90011", font=("ArialUnicodeMS",24), text="Last Synced\n03/23/20 12:02")
-main_sync_status.place(x=509,y=160) 
+main_sync_status = Label(main_frame, anchor="center", height="2", width="17", bd=0, bg="#e3e3e3", fg="#a90011", font=("ArialUnicodeMS",24))
+main_sync_status.place(x=487,y=160) 
 
 wifi_image = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
 wifi_label = Label(main_frame, image=wifi_image, bd=0, bg="#e3e3e3") 
@@ -357,14 +364,20 @@ history_total_passenger3 = Label(hist_frame, width="10", height="1", bd=0, bg="#
 history_total_passenger3.place(x=685,y=321)
 
 ####### GREYED OUT UI BG through Pillow PIL ########
-grey_bg = Canvas(grey_frame, bg="#121212", height=480, width=848)
+grey_bg = Canvas(grey_frame, bg="#FFFFFF", height=480, width=848)
 grey_bg_image = ImageTk.PhotoImage(Image.open("Images/hbbg.png")) # BG through Pillow PIL
 grey_label = Label(grey_frame, image=grey_bg_image) 
 grey_label.place(x=0, y=0, relwidth=1, relheight=1) 
 grey_bg.pack()
 
-grey_recent = Label(grey_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32), text="")
-grey_recent.place(x=520,y=158) 
+grey_recent = Label(grey_frame, anchor="center", height="1", width="8", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32))
+grey_recent.place(x=520,y=200) 
+
+grey_fare = Label(grey_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55))
+grey_fare.place(x=70,y=32)
+
+grey_pass = Label(grey_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55))
+grey_pass.place(x=70,y=282)
 
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
