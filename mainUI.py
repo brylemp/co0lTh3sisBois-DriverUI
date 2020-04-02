@@ -19,6 +19,9 @@ grey_counter = 0
 grey_flag = 0
 grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
 
+#connection flag
+connStatus=0
+
 Driver_Name = ("",)
 Driver_ID = ("",)
 TTP = ""
@@ -83,9 +86,11 @@ def refresh():
         if watt == "thesisShuttle":
             replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
             syB.config(state="normal")
+            connStatus=1
         else:
             replace = ImageTk.PhotoImage(Image.open("Images/nowifi.png"))
             syB.config(state="disabled")
+            connStatus=0
             
         wifi_label.config(image=replace)
         wifi_label.image=replace
@@ -178,8 +183,39 @@ def refresh():
         conn.close()
     window.after(300, refresh)
 
+
+def sendTransactionsCSVToServer():
+    try:
+        #Send account balance CSV to shuttle using SCP
+        print('Sending TransactionDB to Server')
+        proc = subprocess.Popen("sshpass -p '123' scp -o ConnectTimeout=2 csv/transactionsCSV.csv thesis@192.168.1.144:/C:/Users/thesis/Desktop/SERVER/csv", shell=True, stdout=subprocess.PIPE)
+        script_response = proc.stdout.read()
+        print(script_response)
+        print('TransactionDB Sent to Server')
+
+        #backup csv/transactionsCSV.csv to backups
+        print('copying csv/transactionsCSV.csv to backups')
+        source='csv/transactionsCSV.csv'
+        backupTarget='csv/Backups/transactions/transactionsCSV'+ str(datetime.now().strftime("%Y-%m-%d %H;%M;%S"))+'.csv'
+        copyfile(source, backupTarget)
+        print('copied csv/transactionsCSV.csv to backups')
+        #delete accountBalanceCSVRead1.csv
+        os.remove('csv/transactionsCSV.csv')
+        print('removed csv/transactionsCSV.csv')
+
+    except:
+        print("Error encountered in sendTransactionCSVToServer")
+
 def sync():
     print("Sync!")
+    if connStatus==1:
+        #force sync
+        #change dir
+        os.chdir('/home/pi/Desktop/SHUTTLE')
+        #call modules from RaspiSync.py
+        sendTransactionsCSVToServer()
+        #back to current dir
+        os.chdir('/home/pi/Desktop/driverui')
 
 def showhide():
     global showhide_flag
