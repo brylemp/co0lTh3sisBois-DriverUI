@@ -82,8 +82,10 @@ def refresh():
 
         if watt == "thesisShuttle":
             replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
+            syB.config(state="normal")
         else:
             replace = ImageTk.PhotoImage(Image.open("Images/nowifi.png"))
+            syB.config(state="disabled")
             
         wifi_label.config(image=replace)
         wifi_label.image=replace
