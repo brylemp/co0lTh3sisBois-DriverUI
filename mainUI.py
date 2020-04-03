@@ -13,8 +13,9 @@ handbrake_sensor = 29
 
 shutdown_sensor = 31
 shutdown_start = 0
-shutdown_flag = 0
+shutdownPrompt_flag = 0
 shutdown_counter = 0
+cancel_flag=0
 
 history_page_counter = 0
 history_page = []
@@ -61,7 +62,7 @@ def refresh():
         if UID!=None:
             UID=UID>>0x08                                           #removed last 16 bits/2 bytes of the uid read by the mfrc522
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-            cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
+            cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverGPIO.input(shutdown_sensor) == GPIO.LOWounts where RFID_UID=?",(UID, ))
             if cursor!=None:
                 for row in cursor:
                     print(row)
@@ -194,26 +195,27 @@ def refresh():
     global shutdown_timer
     global shutdown_start
     global shutdown_counter
-    global shutdown_flag
+    global shutdownPrompt_flag
 
     # if GPIO.input(shutdown_sensor) == GPIO.LOW:
-    #     if shutdown_flag == 1:
+    #     if shutdownPrompt_flag == 1:
     #         shutdownprompt(1)
-    #     elif shutdown_flag == 0:
+    #     elif shutdownPrompt_flag == 0:
     #         shutdownprompt(0)
     # elif GPIO.input(shutdown_sensor) == GPIO.HIGH:
     #     shutdownprompt(2)
-    print("shutdown_flag: "+str(shutdown_flag))    
+    print("shutdownPrompt_flag: "+str(shutdownPrompt_flag))    
 
-    if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdown_flag == 0: 
+    if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
-    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdown_flag == 1: 
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==1:
         hidesd()
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdown_flag == 1:
+        cancel_flag=0
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==0:
         showsd()
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdown_flag == 0:
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==1:
         hidesd()
-        shutdown_flag = 0
+        cancel_flag=0
         
     if shutdown_start == 1:
         shutdown_counter = shutdown_counter + 1
@@ -228,29 +230,32 @@ def refresh():
 
 def showsd():
     global shutdown_start
-    global shutdown_flag
+    global shutdownPrompt_flag
     global shutdown_counter
 
     main_frame.pack_forget()
     hist_frame.pack_forget()
     shutdown_frame.pack(expand=1,fill=BOTH)
     shutdown_start = 1  
-    shutdown_flag = 0  
+    shutdownPrompt_flag = 1  
 
 def hidesd():
     global shutdown_start
-    global shutdown_flag
+    global shutdownPrompt_flag
     global shutdown_counter
-
     shutdown_frame.pack_forget()
     main_frame.pack(expand=1,fill=BOTH)
     shutdown_start = 0
     shutdown_counter = 0 
-    shutdown_flag = 1 
+    shutdownPrompt_flag = 0 
+
+def cancelFlag():
+    global cancel_flag
+    cancel_flag=1
 
 def shutdownprompt(response):
     global shutdown_start
-    global shutdown_flag
+    global shutdownPrompt_flag
     global shutdown_counter
 
     if response == 0: #### NO FLAG CHANGES
@@ -268,11 +273,11 @@ def shutdownprompt(response):
         main_frame.pack(expand=1,fill=BOTH)
         shutdown_start = 0
         shutdown_counter = 0  
-        shutdown_flag = 1
+        shutdownPrompt_flag = 1
 
 def sendTransactionsCSVToServer():
     try:
-        #Send account balance CSV to shuttle using SCP
+        #Send GPIO.input(shutdown_sensor) == GPIO.LOWount balance CSV to shuttle using SCP
         print('Sending TransactionDB to Server')
         proc = subprocess.Popen("sshpass -p '123' scp -o ConnectTimeout=2 csv/transactionsCSV.csv thesis@192.168.1.144:/C:/Users/thesis/Desktop/SERVER/csv", shell=True, stdout=subprocess.PIPE)
         script_response = proc.stdout.read()
@@ -285,7 +290,7 @@ def sendTransactionsCSVToServer():
         backupTarget='csv/Backups/transactions/transactionsCSV'+ str(datetime.now().strftime("%Y-%m-%d %H;%M;%S"))+'.csv'
         copyfile(source, backupTarget)
         print('copied csv/transactionsCSV.csv to backups')
-        #delete accountBalanceCSVRead1.csv
+        #delete GPIO.input(shutdown_sensor) == GPIO.LOWountBalanceCSVRead1.csv
         os.remove('csv/transactionsCSV.csv')
         print('removed csv/transactionsCSV.csv')
 
@@ -560,14 +565,14 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 ###### BUTTONS FOR SHUTDOWN UI #######
 ###### BUTTON IMAGES LOAD #######
 cf = ImageTk.PhotoImage(Image.open("Images/confirm_button.png"))
-cn = ImageTk.PhotoImage(Image.open("Images/cancel_button.png"))
+cn = ImageTk.PhotoImage(Image.open("Images/cancel_flag_button.png"))
 
 #### CONFIRM ####
 cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: window.destroy())
 cfB.place(bordermode=OUTSIDE,x=215,y=289)
 
-#### CANCEL ####
-cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=hidesd)
+#### cancel_flag ####
+cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=cancel_flag)
 cnB.place(bordermode=OUTSIDE,x=470,y=289)
 
 refresh()
