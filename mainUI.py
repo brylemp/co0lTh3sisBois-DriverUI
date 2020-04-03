@@ -212,10 +212,10 @@ def refresh():
     global prevState
     if GPIO.input(shutdown_sensor) == GPIO.LOW:
         prevState=1
-    else:
-        if prevState==1:
-            cancel_flag=1
+    elif prevState==1:
             prevState=0
+            if shutdownPrompt_flag==1:
+                cancel_flag=1
 
     if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
@@ -225,6 +225,7 @@ def refresh():
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
         hidesd()
+        cancel_flag=2
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
         pass
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
@@ -233,6 +234,9 @@ def refresh():
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
         hidesd()
+        cancel_flag=0
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==2:
+        cancel_flag=0
 
     # if prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
     #     showsd()
