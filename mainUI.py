@@ -192,20 +192,83 @@ def refresh():
 
     # SHUTDOWN TIMER
     global shutdown_timer
+    global shutdown_start
     global shutdown_counter
     global shutdown_flag
 
+    # if GPIO.input(shutdown_sensor) == GPIO.LOW:
+    #     if shutdown_flag == 1:
+    #         shutdownprompt(1)
+    #     elif shutdown_flag == 0:
+    #         shutdownprompt(0)
+    # elif GPIO.input(shutdown_sensor) == GPIO.HIGH:
+    #     shutdownprompt(2)
+    print("shutdown_flag: "+str(shutdown_flag))    
+
+    if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdown_flag == 0: 
+        showsd()
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdown_flag == 1: 
+        hidesd()
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdown_flag == 1:
+        showsd()
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdown_flag == 0:
+        hidesd()
+        shutdown_flag = 0
+        
     if shutdown_start == 1:
         shutdown_counter = shutdown_counter + 1
-        # print(shutdown_counter)
         if shutdown_counter == 50:
             window.destroy()
 
         shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
+    
     window.after(200, refresh)
 
+def showsd():
+    global shutdown_start
+    global shutdown_flag
+    global shutdown_counter
+
+    main_frame.pack_forget()
+    hist_frame.pack_forget()
+    shutdown_frame.pack(expand=1,fill=BOTH)
+    shutdown_start = 1  
+    shutdown_flag = 0  
+
+def hidesd():
+    global shutdown_start
+    global shutdown_flag
+    global shutdown_counter
+
+    shutdown_frame.pack_forget()
+    main_frame.pack(expand=1,fill=BOTH)
+    shutdown_start = 0
+    shutdown_counter = 0 
+    shutdown_flag = 1 
+
+def shutdownprompt(response):
+    global shutdown_start
+    global shutdown_flag
+    global shutdown_counter
+
+    if response == 0: #### NO FLAG CHANGES
+        main_frame.pack_forget()
+        hist_frame.pack_forget()
+        shutdown_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 1    
+    elif response == 1: #### NO FLAG CHANGES
+        shutdown_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 0
+        shutdown_counter = 0  
+    elif response == 2: #### HIDE FLAG = 1
+        shutdown_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 0
+        shutdown_counter = 0  
+        shutdown_flag = 1
 
 def sendTransactionsCSVToServer():
     try:
@@ -229,26 +292,6 @@ def sendTransactionsCSVToServer():
     except:
         print("Error encountered in sendTransactionCSVToServer")
 
-def shutdownprompt(response):
-    global shutdown_start
-    global shutdown_flag
-    global shutdown_counter
-
-    if response == 0:
-        main_frame.pack_forget()
-        hist_frame.pack_forget()
-        shutdown_frame.pack(expand=1,fill=BOTH)
-        shutdown_start = 1
-        print("shutdown == "+str(shutdown_start))      
-    elif response == 1:
-        shutdown_frame.pack_forget()
-        main_frame.pack(expand=1,fill=BOTH)
-        shutdown_start = 0
-        shutdown_flag = 0
-        shutdown_counter = 0
-        print("shutdown == "+str(shutdown_start))      
-   
-    
 def sync():
     print("Sync!")
     if connStatus==1:
@@ -493,7 +536,7 @@ histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthi
 histB.place(bordermode=OUTSIDE,x=448,y=370)
 
 #### SHUTDOWN ####
-shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: shutdownprompt(0)) 
+shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=showsd) 
 shutdownB.place(bordermode=OUTSIDE,x=640,y=370)
 
 ###### BUTTONS FOR HISTORY UI #######
@@ -524,7 +567,7 @@ cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness
 cfB.place(bordermode=OUTSIDE,x=215,y=289)
 
 #### CANCEL ####
-cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: shutdownprompt(1))
+cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=hidesd)
 cnB.place(bordermode=OUTSIDE,x=470,y=289)
 
 refresh()
