@@ -206,17 +206,24 @@ def refresh():
     #     shutdownprompt(2)
     print("shutdownPrompt_flag: "+str(shutdownPrompt_flag))    
 
+
     if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==1:
         hidesd()
-        cancel_flag=0
+        cancel_flag=2
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==0:
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==1:
         hidesd()
+        cancel_flag=2
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==2:
         cancel_flag=0
-        
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==2:
+        showsd()
+        cancel_flag=0
+   
+    
     if shutdown_start == 1:
         shutdown_counter = shutdown_counter + 1
         if shutdown_counter == 50:
@@ -252,6 +259,9 @@ def hidesd():
 def cancelFlag():
     global cancel_flag
     cancel_flag=1
+def shutdownBFlag():
+    global shutdownPrompt_flag
+    shutdownPrompt_flag=1
 
 def shutdownprompt(response):
     global shutdown_start
@@ -541,7 +551,7 @@ histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthi
 histB.place(bordermode=OUTSIDE,x=448,y=370)
 
 #### SHUTDOWN ####
-shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=showsd) 
+shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=shutdownBFlag) 
 shutdownB.place(bordermode=OUTSIDE,x=640,y=370)
 
 ###### BUTTONS FOR HISTORY UI #######
