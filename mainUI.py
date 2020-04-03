@@ -219,22 +219,53 @@ def refresh():
 
     if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
-    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==1:
-        hidesd()
-        cancel_flag=2
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==0:
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
+        pass
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
         showsd()
-        cancel_flag=3
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==1:
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
         hidesd()
-        cancel_flag=2
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==2:
-        cancel_flag=0
-    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==2:
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
+        pass
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
+        pass
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
         showsd()
-        cancel_flag=0
-    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag ==2:
-        cancel_flag=0
+    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
+        hidesd()
+
+    # if prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
+    #     showsd()
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
+    #     hidesd()
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
+    #     showsd()
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
+    #     hidesd()
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
+    #     pass
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
+    #     pass
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
+    #     showsd()
+    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
+    #     hidesd()
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
+    #     pass
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
+    #     pass
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
+    #     showsd()
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
+    #     hidesd()
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
+    #     pass
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
+    #     pass
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
+    #     pass
+    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
+    #     pass
    
     
     if shutdown_start == 1:
