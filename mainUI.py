@@ -16,6 +16,8 @@ shutdown_start = 0
 shutdownPrompt_flag = 0
 shutdown_counter = 0
 cancel_flag=0
+prevState = 0
+
 
 history_page_counter = 0
 history_page = []
@@ -62,7 +64,7 @@ def refresh():
         if UID!=None:
             UID=UID>>0x08                                           #removed last 16 bits/2 bytes of the uid read by the mfrc522
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-            cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverGPIO.input(shutdown_sensor) == GPIO.LOWounts where RFID_UID=?",(UID, ))
+            cursor = conn.execute("SELECT RFID_UID, Driver_ID, Fname from driverAccounts where RFID_UID=?",(UID, ))
             if cursor!=None:
                 for row in cursor:
                     print(row)
@@ -196,6 +198,7 @@ def refresh():
     global shutdown_start
     global shutdown_counter
     global shutdownPrompt_flag
+    global cancel_flag
 
     # if GPIO.input(shutdown_sensor) == GPIO.LOW:
     #     if shutdownPrompt_flag == 1:
@@ -205,7 +208,14 @@ def refresh():
     # elif GPIO.input(shutdown_sensor) == GPIO.HIGH:
     #     shutdownprompt(2)
     print("shutdownPrompt_flag: "+str(shutdownPrompt_flag))    
-
+    
+    global prevState
+    if GPIO.input(shutdown_sensor) == GPIO.LOW:
+        prevState=1
+    else:
+        if prevState==1:
+            cancel_flag=1
+            prevState=0
 
     if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
@@ -214,6 +224,7 @@ def refresh():
         cancel_flag=2
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==0:
         showsd()
+        cancel_flag=3
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag ==1:
         hidesd()
         cancel_flag=2
@@ -221,6 +232,8 @@ def refresh():
         cancel_flag=0
     elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag ==2:
         showsd()
+        cancel_flag=0
+    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag ==2:
         cancel_flag=0
    
     
@@ -575,14 +588,14 @@ prevB.place(bordermode=OUTSIDE,x=200,y=380)
 ###### BUTTONS FOR SHUTDOWN UI #######
 ###### BUTTON IMAGES LOAD #######
 cf = ImageTk.PhotoImage(Image.open("Images/confirm_button.png"))
-cn = ImageTk.PhotoImage(Image.open("Images/cancel_flag_button.png"))
+cn = ImageTk.PhotoImage(Image.open("Images/cancel_button.png"))
 
 #### CONFIRM ####
 cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: window.destroy())
 cfB.place(bordermode=OUTSIDE,x=215,y=289)
 
 #### cancel_flag ####
-cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=cancel_flag)
+cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=cancelFlag)
 cnB.place(bordermode=OUTSIDE,x=470,y=289)
 
 refresh()
