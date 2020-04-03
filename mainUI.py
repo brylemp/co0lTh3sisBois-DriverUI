@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 from tkinter import *
+from tkinter import messagebox
 from PIL import ImageTk, Image
 from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
@@ -9,6 +10,11 @@ os.chdir('/home/pi/Desktop/driverui')
 
 login = 0
 handbrake_sensor = 29
+
+shutdown_sensor = 31
+shutdown_start = 0
+shutdown_flag = 0
+shutdown_counter = 0
 
 history_page_counter = 0
 history_page = []
@@ -28,6 +34,7 @@ TTP = ""
 TTF = ""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(shutdown_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setwarnings(False)
 
 def updateDriverStatus(driverIDNum):
@@ -155,7 +162,7 @@ def refresh():
                     grey_recent.config(text=new,anchor="w")
                     grey_fare.config(text=TTF,anchor="center")
                     grey_pass.config(text=TTP,anchor="center")
-                    if grey_counter == 16:
+                    if grey_counter == 25:
                         grey_recent.config(text="",anchor="w")
                         grey_frame.pack_forget()
                         grey_counter = 0
@@ -181,7 +188,23 @@ def refresh():
         recent = cursor.fetchone()[0]
         main_recent.config(text=recent,anchor="w")
         conn.close()
-    window.after(300, refresh)
+
+
+    # SHUTDOWN TIMER
+    global shutdown_timer
+    global shutdown_counter
+    global shutdown_flag
+
+    if shutdown_start == 1:
+        shutdown_counter = shutdown_counter + 1
+        # print(shutdown_counter)
+        if shutdown_counter == 50:
+            window.destroy()
+
+        shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
+        shutdown_seconds.config(text=shutdown_timer)
+
+    window.after(200, refresh)
 
 
 def sendTransactionsCSVToServer():
@@ -206,6 +229,26 @@ def sendTransactionsCSVToServer():
     except:
         print("Error encountered in sendTransactionCSVToServer")
 
+def shutdownprompt(response):
+    global shutdown_start
+    global shutdown_flag
+    global shutdown_counter
+
+    if response == 0:
+        main_frame.pack_forget()
+        hist_frame.pack_forget()
+        shutdown_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 1
+        print("shutdown == "+str(shutdown_start))      
+    elif response == 1:
+        shutdown_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 0
+        shutdown_flag = 0
+        shutdown_counter = 0
+        print("shutdown == "+str(shutdown_start))      
+   
+    
 def sync():
     print("Sync!")
     if connStatus==1:
@@ -329,6 +372,9 @@ hist_frame.pack_forget()
 grey_frame = Frame(window)
 grey_frame.pack_forget()
 
+shutdown_frame = Frame(window)
+shutdown_frame.pack_forget()
+
 ####### LOGIN UI BG through Pillow PIL ########
 login_bg = Canvas(login_frame, bg="#e3e3e3", height=480, width=848) 
 login_bg_image = ImageTk.PhotoImage(Image.open("Images/loginbg.png")) # BG through Pillow PIL
@@ -417,6 +463,16 @@ grey_fare.place(x=70,y=32)
 grey_pass = Label(grey_frame, width="7", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",55))
 grey_pass.place(x=70,y=282)
 
+####### SHUTDOWN UI BG through Pillow PIL ########
+shutdown_bg = Canvas(shutdown_frame, bg="#FFFFFF", height=480, width=848)
+shutdown_bg_image = ImageTk.PhotoImage(Image.open("Images/sdbg.png")) # BG through Pillow PIL
+shutdown_label = Label(shutdown_frame, image=shutdown_bg_image) 
+shutdown_label.place(x=0, y=0, relwidth=1, relheight=1) 
+shutdown_bg.pack()
+
+shutdown_seconds = Label(shutdown_frame, anchor="center", height="1", width="10", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",32))
+shutdown_seconds.place(x=320,y=196) 
+
 ###### BUTTONS FOR MAIN UI #######
 ###### BUTTON IMAGES LOAD #######
 sd_image = ImageTk.PhotoImage(Image.open("Images/sd_button.png"))
@@ -437,7 +493,7 @@ histB = Button (main_frame, image=hist_image, width=182, height=74, highlightthi
 histB.place(bordermode=OUTSIDE,x=448,y=370)
 
 #### SHUTDOWN ####
-shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=window.destroy) 
+shutdownB = Button (main_frame, image=sd_image, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: shutdownprompt(0)) 
 shutdownB.place(bordermode=OUTSIDE,x=640,y=370)
 
 ###### BUTTONS FOR HISTORY UI #######
@@ -457,6 +513,19 @@ nextB.place(bordermode=OUTSIDE,x=465,y=380)
 #### PREVIOUS ####
 prevB = Button (hist_frame, image=pv, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: pageturn(1))
 prevB.place(bordermode=OUTSIDE,x=200,y=380)
+
+###### BUTTONS FOR SHUTDOWN UI #######
+###### BUTTON IMAGES LOAD #######
+cf = ImageTk.PhotoImage(Image.open("Images/confirm_button.png"))
+cn = ImageTk.PhotoImage(Image.open("Images/cancel_button.png"))
+
+#### CONFIRM ####
+cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: window.destroy())
+cfB.place(bordermode=OUTSIDE,x=215,y=289)
+
+#### CANCEL ####
+cnB = Button (shutdown_frame, image=cn, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: shutdownprompt(1))
+cnB.place(bordermode=OUTSIDE,x=470,y=289)
 
 refresh()
 window.mainloop() #Start
