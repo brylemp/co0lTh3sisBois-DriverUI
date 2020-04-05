@@ -5,6 +5,7 @@ from PIL import ImageTk, Image
 from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
 import datetime
+import time
 
 os.chdir('/home/pi/Desktop/driverui')
 
@@ -245,7 +246,7 @@ def refresh():
         if time.time()-shutdown_counter > 10:
             window.destroy()
 
-        shutdown_timer = str(10-(datetime.time()-shutdown_counter)) + " Seconds"
+        shutdown_timer = str(10-(time.time()-shutdown_counter)) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
     
@@ -259,7 +260,7 @@ def showsd():
     main_frame.pack_forget()
     hist_frame.pack_forget()
     shutdown_frame.pack(expand=1,fill=BOTH)
-    shutdown_counter = datetime.time()
+    shutdown_counter = time.time()
     shutdown_start = 1  
     shutdownPrompt_flag = 1  
 
