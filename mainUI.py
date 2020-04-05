@@ -243,10 +243,12 @@ def refresh():
     #     shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
     #     shutdown_seconds.config(text=shutdown_timer)
     if shutdown_start == 1:
+        if(shutdown_counter==0):
+            shutdown_counter = time.time()
         if time.time()-shutdown_counter > 10:
             window.destroy()
 
-        shutdown_timer = str(10-(time.time()-shutdown_counter)) + " Seconds"
+        shutdown_timer = str(round(10-(time.time()-shutdown_counter))) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
     
@@ -260,7 +262,6 @@ def showsd():
     main_frame.pack_forget()
     hist_frame.pack_forget()
     shutdown_frame.pack(expand=1,fill=BOTH)
-    shutdown_counter = time.time()
     shutdown_start = 1  
     shutdownPrompt_flag = 1  
 
