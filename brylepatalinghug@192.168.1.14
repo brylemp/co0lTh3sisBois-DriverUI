@@ -19,6 +19,7 @@ shutdown_counter = 0
 cancel_flag=0
 prevState = 0
 
+
 history_page_counter = 0
 history_page = []
 
@@ -27,7 +28,6 @@ showhide_flag = 0
 grey_counter = 0
 grey_flag = 0
 grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
-grey_start = 0
 
 #connection flag
 connStatus=0
@@ -149,7 +149,6 @@ def refresh():
         global grey_flag
         global grey_counter
         global grey_old
-        global grey_start
 
         if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
             main_frame.pack_forget()
@@ -159,28 +158,29 @@ def refresh():
             cursor = conn.execute("SELECT uid from recentTransaction")
             new = cursor.fetchone()[0]
             print(grey_old,new)
-            if grey_old != new:
-                grey_flag = 1
-                grey_counter = time.time()
-                print(grey_counter)
-                grey_old = new
-
-            if grey_flag == 1:
-                grey_frame.pack(expand=1,fill=BOTH)
-                grey_recent.config(text=new,anchor="w")
-                grey_fare.config(text=TTF,anchor="center")
-                grey_pass.config(text=TTP,anchor="center")
-                # if grey_counter == 25:
-                print(time.time()-grey_counter)
-                if time.time()-grey_counter > 5:
+            if grey_old == new:
+                
+                if grey_flag == 1:
+                    # print(grey_counter)
+                    grey_frame.pack(expand=1,fill=BOTH)
+                    grey_recent.config(text=new,anchor="w")
+                    grey_fare.config(text=TTF,anchor="center")
+                    grey_pass.config(text=TTP,anchor="center")
+                    if grey_counter == 25:
+                        grey_recent.config(text="",anchor="w")
+                        grey_frame.pack_forget()
+                        grey_counter = 0
+                        grey_flag = 0
+                    else:
+                        grey_counter = grey_counter + 1
+                else:
                     grey_recent.config(text="",anchor="w")
                     grey_frame.pack_forget()
-                    grey_counter = 0
-                    grey_flag = 0
+                    
             else:
-                grey_recent.config(text="",anchor="w")
-                grey_frame.pack_forget()
-
+                grey_flag = 1
+                grey_counter = 0
+                grey_old = new
         else:
             grey_frame.pack_forget()
             main_frame.pack(expand=1,fill=BOTH)
@@ -200,8 +200,17 @@ def refresh():
     global shutdown_counter
     global shutdownPrompt_flag
     global cancel_flag
-    global prevState
 
+    # if GPIO.input(shutdown_sensor) == GPIO.LOW:
+    #     if shutdownPrompt_flag == 1:
+    #         shutdownprompt(1)
+    #     elif shutdownPrompt_flag == 0:
+    #         shutdownprompt(0)
+    # elif GPIO.input(shutdown_sensor) == GPIO.HIGH:
+    #     shutdownprompt(2)
+    print("shutdownPrompt_flag: "+str(shutdownPrompt_flag))    
+    
+    global prevState
     if GPIO.input(shutdown_sensor) == GPIO.LOW:
         prevState=1
     elif prevState==1:
@@ -226,6 +235,13 @@ def refresh():
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==2:
         cancel_flag=0
     
+    # if shutdown_start == 1:
+    #     shutdown_counter = shutdown_counter + 1
+    #     if shutdown_counter == 50:
+    #         window.destroy()
+
+    #     shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
+    #     shutdown_seconds.config(text=shutdown_timer)
     if shutdown_start == 1:
         if(shutdown_counter==0):
             shutdown_counter = time.time()
@@ -235,11 +251,13 @@ def refresh():
         shutdown_timer = str(round(10-(time.time()-shutdown_counter))) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
+    
     window.after(200, refresh)
 
 def showsd():
     global shutdown_start
     global shutdownPrompt_flag
+    global shutdown_counter
 
     main_frame.pack_forget()
     hist_frame.pack_forget()
@@ -251,11 +269,10 @@ def hidesd():
     global shutdown_start
     global shutdownPrompt_flag
     global shutdown_counter
-
     shutdown_frame.pack_forget()
     main_frame.pack(expand=1,fill=BOTH)
     shutdown_start = 0
-    shutdown_counter = 0
+    shutdown_counter = 0 
     shutdownPrompt_flag = 0 
 
 def cancelFlag():
@@ -264,6 +281,28 @@ def cancelFlag():
 def shutdownBFlag():
     global shutdownPrompt_flag
     shutdownPrompt_flag=1
+
+def shutdownprompt(response):
+    global shutdown_start
+    global shutdownPrompt_flag
+    global shutdown_counter
+
+    if response == 0: #### NO FLAG CHANGES
+        main_frame.pack_forget()
+        hist_frame.pack_forget()
+        shutdown_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 1    
+    elif response == 1: #### NO FLAG CHANGES
+        shutdown_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 0
+        shutdown_counter = 0  
+    elif response == 2: #### HIDE FLAG = 1
+        shutdown_frame.pack_forget()
+        main_frame.pack(expand=1,fill=BOTH)
+        shutdown_start = 0
+        shutdown_counter = 0  
+        shutdownPrompt_flag = 1
 
 def sendTransactionsCSVToServer():
     try:
