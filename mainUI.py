@@ -219,17 +219,11 @@ def refresh():
 
     if GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
         showsd()
-    elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
-        pass
     elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
         hidesd()
         cancel_flag=2
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
-        pass
-    elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
-        pass
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
         showsd()
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
@@ -239,47 +233,19 @@ def refresh():
         cancel_flag=0
     elif GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==2:
         cancel_flag=0
-
-    # if prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
-    #     showsd()
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
-    #     hidesd()
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
-    #     showsd()
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
-    #     hidesd()
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
-    #     pass
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
-    #     pass
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
-    #     showsd()
-    # elif prevState==0 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
-    #     hidesd()
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==0:
-    #     pass
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==0 and cancel_flag==1:
-    #     pass
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==0:
-    #     showsd()
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.LOW and shutdownPrompt_flag==1 and cancel_flag==1:
-    #     hidesd()
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==0:
-    #     pass
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==0 and cancel_flag==1:
-    #     pass
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==0:
-    #     pass
-    # elif prevState==1 and GPIO.input(shutdown_sensor) == GPIO.HIGH and shutdownPrompt_flag==1 and cancel_flag==1:
-    #     pass
-   
     
+    # if shutdown_start == 1:
+    #     shutdown_counter = shutdown_counter + 1
+    #     if shutdown_counter == 50:
+    #         window.destroy()
+
+    #     shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
+    #     shutdown_seconds.config(text=shutdown_timer)
     if shutdown_start == 1:
-        shutdown_counter = shutdown_counter + 1
-        if shutdown_counter == 50:
+        if time.time()-shutdown_counter > 10:
             window.destroy()
 
-        shutdown_timer = str(10 - int(shutdown_counter * 0.2)) + " Seconds"
+        shutdown_timer = str(10-(datetime.time()-shutdown_counter)) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
     
@@ -293,6 +259,7 @@ def showsd():
     main_frame.pack_forget()
     hist_frame.pack_forget()
     shutdown_frame.pack(expand=1,fill=BOTH)
+    shutdown_counter = datetime.time()
     shutdown_start = 1  
     shutdownPrompt_flag = 1  
 
