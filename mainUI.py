@@ -6,6 +6,7 @@ from mfrc522 import SimpleMFRC522
 import os,re, sqlite3
 import datetime
 import time
+from subprocess import call
 
 os.chdir('/home/pi/Desktop/driverui')
 
@@ -27,7 +28,6 @@ showhide_flag = 0
 grey_counter = 0
 grey_flag = 0
 grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
-grey_start = 0
 
 #connection flag
 connStatus=0
@@ -56,6 +56,9 @@ def updateDriverStatus(driverIDNum):
         if (conn):
             conn.close()
             # print("The SQLite connection is closed")
+def shutdownPi():
+    window.destroy()
+    call("sudo poweroff", shell=True)
 
 def refresh():
     global login
@@ -149,7 +152,6 @@ def refresh():
         global grey_flag
         global grey_counter
         global grey_old
-        global grey_start
 
         if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
             main_frame.pack_forget()
@@ -230,8 +232,9 @@ def refresh():
         if(shutdown_counter==0):
             shutdown_counter = time.time()
         if time.time()-shutdown_counter > 10:
-            window.destroy()
-
+            #window.destroy()
+            shutdownPi()
+            
         shutdown_timer = str(round(10-(time.time()-shutdown_counter))) + " Seconds"
         shutdown_seconds.config(text=shutdown_timer)
 
@@ -558,7 +561,7 @@ cf = ImageTk.PhotoImage(Image.open("Images/confirm_button.png"))
 cn = ImageTk.PhotoImage(Image.open("Images/cancel_button.png"))
 
 #### CONFIRM ####
-cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: window.destroy())
+cfB = Button (shutdown_frame, image=cf, width=182, height=74, highlightthickness=0, bd=0, bg="#e3e3e3", activebackground="#e3e3e3", command=lambda: shutdownPi())
 cfB.place(bordermode=OUTSIDE,x=215,y=289)
 
 #### cancel_flag ####
