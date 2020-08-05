@@ -322,17 +322,38 @@ def pageturn(nextt):
     elif history_page_counter < 0:
         history_page_counter = 0
 
-    history_date1.config(text=history_page[history_page_counter][0]['Date'])
-    history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
-    history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
-
-    history_date2.config(text=history_page[history_page_counter][1]['Date'])
-    history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
-    history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
-
-    history_date3.config(text=history_page[history_page_counter][2]['Date'])
-    history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
-    history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
+    if history_page[history_page_counter][0]['Date'] == ' ':
+        history_date1.config(text="")
+        history_total_labels1.config(text="")
+        history_total_amount1.config(text="")
+        history_total_passenger1.config(text="")
+    else:
+        history_date1.config(text=history_page[history_page_counter][0]['Date'])
+        history_total_labels1.config(text="Total Earned(Php):\nTotal Passengers:")
+        history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
+        history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
+    
+    if history_page[history_page_counter][1]['Date'] == ' ':
+        history_date2.config(text="")
+        history_total_labels2.config(text="")
+        history_total_amount2.config(text="")
+        history_total_passenger2.config(text="")
+    else:
+        history_date2.config(text=history_page[history_page_counter][1]['Date'])
+        history_total_labels2.config(text="Total Earned(Php):\nTotal Passengers:")
+        history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
+        history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
+    
+    if history_page[history_page_counter][2]['Date'] == ' ':
+        history_date3.config(text="")
+        history_total_labels3.config(text="")
+        history_total_amount3.config(text="")
+        history_total_passenger3.config(text="")
+    else:
+        history_date3.config(text=history_page[history_page_counter][2]['Date'])
+        history_total_labels3.config(text="Total Earned(Php):\nTotal Passengers:")
+        history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
+        history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
 
 def history_frame_open():
     global history_page
@@ -347,6 +368,7 @@ def history_frame_open():
     if rowexists == None:
         print("None")
         history_date1.config(text="")
+        history_total_labels1.config(text="")
         history_total_amount1.config(text="")
         history_total_passenger1.config(text="")
 
@@ -379,17 +401,36 @@ def history_frame_open():
         history_page = []
         for x in range(int(len(histrecord)/3)):
             history_page.append(histrecord[x*3:(x*3)+3])
-        history_date1.config(text=history_page[history_page_counter][0]['Date'])
-        history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
-        history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
-
-        history_date2.config(text=history_page[history_page_counter][1]['Date'])
-        history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
-        history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
-
-        history_date3.config(text=history_page[history_page_counter][2]['Date'])
-        history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
-        history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
+        
+        if history_page[history_page_counter][0]['Date'] == ' ':
+            history_total_labels1.config(text="")
+            history_total_amount1.config(text="")
+            history_total_passenger1.config(text="")
+        else:
+            history_date1.config(text=history_page[history_page_counter][0]['Date'])
+            history_total_labels1.config(text="Total Earned(Php):\nTotal Passengers:")
+            history_total_amount1.config(text=history_page[history_page_counter][0]['Total_Amount'])
+            history_total_passenger1.config(text=int(history_page[history_page_counter][0]['Total_Amount']/5))
+        
+        if history_page[history_page_counter][1]['Date'] == ' ':
+            history_total_labels2.config(text="")
+            history_total_amount2.config(text="")
+            history_total_passenger2.config(text="")
+        else:
+            history_date2.config(text=history_page[history_page_counter][1]['Date'])
+            history_total_labels2.config(text="Total Earned(Php):\nTotal Passengers:")
+            history_total_amount2.config(text=history_page[history_page_counter][1]['Total_Amount'])
+            history_total_passenger2.config(text=int(history_page[history_page_counter][1]['Total_Amount']/5))
+        
+        if history_page[history_page_counter][2]['Date'] == ' ':
+            history_total_labels3.config(text="")
+            history_total_amount3.config(text="")
+            history_total_passenger3.config(text="")
+        else:
+            history_date3.config(text=history_page[history_page_counter][2]['Date'])
+            history_total_labels3.config(text="Total Earned(Php):\nTotal Passengers:")
+            history_total_amount3.config(text=history_page[history_page_counter][2]['Total_Amount'])
+            history_total_passenger3.config(text=int(history_page[history_page_counter][2]['Total_Amount']/5))
         
     conn.close()
 
@@ -464,6 +505,9 @@ hist_bg.pack()
 history_date1 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",30))
 history_date1.place(x=50,y=125)
 
+history_total_labels1 = Label(hist_frame, width="17", height="2", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",22))
+history_total_labels1.place(x=410,y=114)
+
 history_total_amount1 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
 history_total_amount1.place(x=685,y=115)
 
@@ -473,6 +517,9 @@ history_total_passenger1.place(x=685,y=155)
 history_date2 = Label(hist_frame, width="10", height="1", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",30))
 history_date2.place(x=50,y=209)
 
+history_total_labels2 = Label(hist_frame, width="17", height="2", bd=0, bg="#e3e3e3", fg="#000000", font=("ArialUnicodeMS",22))
+history_total_labels2.place(x=410,y=196)
+
 history_total_amount2 = Label(hist_frame, width="10", height="1", bd=0, bg="#e3e3e3", fg="#00ad31", font=("ArialUnicodeMS",20))
 history_total_amount2.place(x=685,y=199)
 
@@ -481,6 +528,9 @@ history_total_passenger2.place(x=685,y=239)
 
 history_date3 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",30))
 history_date3.place(x=50,y=291)
+
+history_total_labels3 = Label(hist_frame, width="17", height="2", bd=0, bg="#c5c5c5", fg="#000000", font=("ArialUnicodeMS",22))
+history_total_labels3.place(x=410,y=278)
 
 history_total_amount3 = Label(hist_frame, width="10", height="1", bd=0, bg="#c5c5c5", fg="#00ad31", font=("ArialUnicodeMS",20))
 history_total_amount3.place(x=685,y=281)
