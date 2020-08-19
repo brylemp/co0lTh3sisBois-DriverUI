@@ -14,7 +14,7 @@ login = 0
 handbrake_voltage = 36
 handbrake_sensor = 29
 
-shutdown_sensor = 31
+shutdown_sensor = 33
 shutdown_start = 0
 shutdownPrompt_flag = 0
 shutdown_counter = 0
@@ -136,19 +136,19 @@ def refresh():
         #SYNC STATUS
         conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
         cursor = conn.execute("SELECT * FROM transactions LIMIT 1")
-        transactionStatus=cursor.fetchone()[0]
+        transactionStatus=cursor.fetchone()
         if transactionStatus!=None:
             #Not synced, show last synched
             #find last synced status
             cursor = conn.execute("SELECT Date_Time FROM syncStatus WHERE id=1 LIMIT 1")
             lastSynced=cursor.fetchone()[0]
             if lastSynced!=None:
-                main_sync_status.config(text="Last Synced\n "+lastSynced,anchor="center")
+                main_sync_status.config(text="Last Synced\n "+lastSynced, fg="#a90011", anchor="center")
             else:
-                main_sync_status.config(text="Last Synced: N/A",anchor="center")
+                main_sync_status.config(text="Last Synced: N/A", fg="#a90011", anchor="center")
         else:
-            #synced, show synced
-            main_sync_status.config(text="Synchronized",anchor="center")
+            #synced, show syn ced
+            main_sync_status.config(text="Synchronized", fg="#00ad31", anchor="center")
         conn.close()
 
         #GREY RFID
@@ -267,6 +267,7 @@ def hidesd():
 def cancelFlag():
     global cancel_flag
     cancel_flag=1
+    
 def shutdownBFlag():
     global shutdownPrompt_flag
     shutdownPrompt_flag=1
