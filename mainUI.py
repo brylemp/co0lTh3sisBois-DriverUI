@@ -11,6 +11,7 @@ from subprocess import call
 os.chdir('/home/pi/Desktop/driverui')
 
 login = 0
+handbrake_voltage = 36
 handbrake_sensor = 29
 
 shutdown_sensor = 31
@@ -39,6 +40,8 @@ TTF = ""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(shutdown_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(handbrake_voltage,GPIO.OUT)
+GPIO.output(handbrake_voltage,GPIO.HIGH)
 GPIO.setwarnings(False)
 
 def updateDriverStatus(driverIDNum):
