@@ -10,6 +10,7 @@ from subprocess import call
 
 os.chdir('/home/pi/Desktop/driverui')
 
+buzzer1 = 37
 login = 0
 handbrake_voltage = 36
 handbrake_sensor = 29
@@ -38,12 +39,18 @@ Driver_ID = ("",)
 TTP = ""
 TTF = ""
 GPIO.setmode(GPIO.BOARD)
+GPIO.setup(buzzer1,GPIO.OUT)
 GPIO.setup(handbrake_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(shutdown_sensor,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(handbrake_voltage,GPIO.OUT)
 GPIO.output(handbrake_voltage,GPIO.HIGH)
 GPIO.setwarnings(False)
 
+def buzzSuccessful(buzzer1):
+        GPIO.output(buzzer1,GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(buzzer1,GPIO.LOW)
+        
 def updateDriverStatus(driverIDNum):
     try:
         conn=sqlite3.connect('../SHUTTLE/shuttle1.db')
@@ -86,6 +93,7 @@ def refresh():
                         main_drivername.config(text=Driver_Name[0])
                         login_frame.pack_forget()
                         main_frame.pack(expand=1,fill=BOTH)
+                        buzzSuccessful(buzzer1)
                         login = 1
                         break
                         
