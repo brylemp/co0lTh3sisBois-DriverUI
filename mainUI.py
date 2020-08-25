@@ -29,7 +29,8 @@ showhide_flag = 0
 
 grey_counter = 0
 grey_flag = 0
-grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
+grey_old = ''
+#grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
 
 #connection flag
 connStatus=0
