@@ -29,7 +29,7 @@ showhide_flag = 0
 
 grey_counter = 0
 grey_flag = 0
-grey_old = ''
+grey_old = 'start'
 #grey_old = sqlite3.connect('../SHUTTLE/shuttle1.db').execute("SELECT uid from recentTransaction").fetchone()[0]
 
 #connection flag
@@ -173,6 +173,9 @@ def refresh():
             cursor = conn.execute("SELECT uid from recentTransaction")
             new = cursor.fetchone()[0]
             print(grey_old,new)
+            if grey_old == 'start':
+                grey_old = new
+            
             if grey_old != new:
                 grey_flag = 1
                 grey_counter = time.time()
@@ -190,7 +193,6 @@ def refresh():
                     grey_frame.pack_forget()
                     grey_counter = 0
                     grey_flag = 0
-                    grey_old = ''
             else:
                 grey_recent.config(text="",anchor="w")
                 grey_frame.pack_forget()
