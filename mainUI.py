@@ -168,11 +168,10 @@ def refresh():
         if(GPIO.input(handbrake_sensor)==GPIO.HIGH):
             main_frame.pack_forget()
             hist_frame.pack_forget()
-            # grey_frame.pack(expand=1,fill=BOTH)
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
                 
-            cursor = conn.execute("SELECT date_time from recentTransaction")
-            new = cursor.fetchone()[0]
+            cursor = conn.execute("SELECT uid,date_time FROM recentTransaction")
+            driverUID, new = cursor.fetchone()
             print(grey_old,new)
             if grey_old == 'start':
                 grey_old = new
@@ -185,7 +184,7 @@ def refresh():
 
             if grey_flag == 1:
                 grey_frame.pack(expand=1,fill=BOTH)
-                grey_recent.config(text=new,anchor="w")
+                grey_recent.config(text=driverUID,anchor="w")
                 grey_fare.config(text=TTF,anchor="center")
                 grey_pass.config(text=TTP,anchor="center")
                 print(time.time()-grey_counter)
