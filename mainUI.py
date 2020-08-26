@@ -170,7 +170,8 @@ def refresh():
             hist_frame.pack_forget()
             # grey_frame.pack(expand=1,fill=BOTH)
             conn = sqlite3.connect('../SHUTTLE/shuttle1.db')
-            cursor = conn.execute("SELECT uid from recentTransaction")
+                
+            cursor = conn.execute("SELECT date_time from recentTransaction")
             new = cursor.fetchone()[0]
             print(grey_old,new)
             if grey_old == 'start':
