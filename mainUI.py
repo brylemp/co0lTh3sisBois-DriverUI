@@ -184,13 +184,13 @@ def refresh():
                 grey_recent.config(text=new,anchor="w")
                 grey_fare.config(text=TTF,anchor="center")
                 grey_pass.config(text=TTP,anchor="center")
-                # if grey_counter == 25:
                 print(time.time()-grey_counter)
                 if time.time()-grey_counter > 5:
                     grey_recent.config(text="",anchor="w")
                     grey_frame.pack_forget()
                     grey_counter = 0
                     grey_flag = 0
+                    grey_old = ''
             else:
                 grey_recent.config(text="",anchor="w")
                 grey_frame.pack_forget()
