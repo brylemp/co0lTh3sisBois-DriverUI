@@ -109,7 +109,7 @@ def refresh():
         # x = ipadd.find('Profile                : ') + 25
         # watt = ipadd[x:].split(' ')[0]
 
-        if watt == "thesisShuttle" or "":
+        if watt == "thesisShuttle" or watt == "":
             replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
             syB.config(state="normal")
             connStatus=1
