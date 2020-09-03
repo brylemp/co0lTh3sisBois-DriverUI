@@ -102,14 +102,15 @@ def refresh():
     else:
         # WIFI CHECK
         wat = os.popen('iwgetid').read() ### RASPI ###
-        watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
-        watt = ''.join(watt) ##CONVERT LIST TO STRING##
+        #watt = re.findall('"([^"]*)"',wat) ##FIND ENCLOSED IN ""##
+        #watt = ''.join(watt) ##CONVERT LIST TO STRING##
 
         # ipadd = os.popen('Netsh WLAN show interfaces').read() ### WINDOWS ###
         # x = ipadd.find('Profile                : ') + 25
         # watt = ipadd[x:].split(' ')[0]
-
-        if watt == "thesisShuttle" or watt == "":
+        
+        wat = wat[10:]
+        if wat == 'ESSID:"thesisShuttle"\n' or wat == 'ESSID:""\n':
             replace = ImageTk.PhotoImage(Image.open("Images/yeswifi.png"))
             syB.config(state="normal")
             connStatus=1
